@@ -12,10 +12,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install PHPCS and WordPress standards
-        run: |
-          composer global require squizlabs/php_codesniffer wp-coding-standards/wpcs dealerdirect/phpcodesniffer-composer-installer
-          echo "${HOME}/.composer/vendor/bin" >> $GITHUB_PATH
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          coverage: none
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
 
       - name: Run PHPCS
-        run: phpcs --standard=phpcs.xml -s
+        run: composer run phpcs

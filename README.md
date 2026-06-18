@@ -41,8 +41,8 @@ Or tag a release — GitHub Actions builds `vendorhub-woocommerce-v{version}.zip
 ## PHPCS
 
 ```bash
-composer global require squizlabs/php_codesniffer wp-coding-standards/wpcs dealerdirect/phpcodesniffer-composer-installer
-phpcs --standard=phpcs.xml
+composer install
+composer run phpcs
 ```
 
 ## License

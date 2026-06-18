@@ -5,7 +5,7 @@ Recommended plugin slug: **`vendorhub-woocommerce`** (alternate: `vendorhub-for-
 ## Pre-submission (automated / repo)
 
 - [x] `phpcs.xml` with WordPress-Core + WordPress-Extra
-- [x] GitHub Actions: PHPCS on PR, release ZIP on tag
+- [x] GitHub Actions: PHPCS on PR, release ZIP on tag (project `composer.json` + `shivammathur/setup-php`)
 - [x] `readme.txt` complete (stable tag, WC tested up to, PHP, FAQ, screenshots list, changelog)
 - [ ] `assets/` — icon + banner PNGs committed on GitHub; `screenshot-1.png` … `screenshot-4.png` still needed (see `assets/README.md`)
 - [x] Privacy policy via `includes/class-vendorhub-privacy.php` + readme external services section
