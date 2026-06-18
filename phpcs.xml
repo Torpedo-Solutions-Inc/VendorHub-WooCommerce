@@ -6,6 +6,7 @@
 	<exclude-pattern>vendor/*</exclude-pattern>
 	<exclude-pattern>node_modules/*</exclude-pattern>
 	<exclude-pattern>assets/*</exclude-pattern>
+	<exclude-pattern>docs/*</exclude-pattern>
 	<exclude-pattern>*.zip</exclude-pattern>
 
 	<rule ref="WordPress-Core"/>
@@ -22,9 +23,17 @@
 
 	<rule ref="WordPress.NamingConventions.ValidVariableName">
 		<properties>
-			<property name="customPropertiesWhitelist" type="array">
+			<property name="allowed_custom_properties" type="array">
 				<element value="php_input"/>
 			</property>
 		</properties>
+	</rule>
+
+	<rule ref="WordPress.WP.Capabilities.Unknown">
+		<severity>0</severity>
+	</rule>
+
+	<rule ref="WordPress.Security.NonceVerification.Recommended">
+		<severity>0</severity>
 	</rule>
 </ruleset>

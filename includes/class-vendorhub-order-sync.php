@@ -136,7 +136,7 @@ class VendorHub_Order_Sync {
 	 * @return array
 	 */
 	public static function normalize_order( $order ) {
-		$created = $order->get_date_created();
+		$created    = $order->get_date_created();
 		$created_at = $created ? $created->date( 'c' ) : gmdate( 'c' );
 
 		$line_items = array();
@@ -176,15 +176,15 @@ class VendorHub_Order_Sync {
 		$shipping_name = trim( $shipping['first_name'] . ' ' . $shipping['last_name'] );
 
 		$normalized = array(
-			'externalId'   => (string) $order->get_id(),
-			'platform'     => 'woocommerce',
-			'orderNumber'  => (string) $order->get_order_number(),
-			'name'         => '#' . $order->get_order_number(),
-			'createdAt'    => $created_at,
-			'tags'         => array(),
-			'currency'     => $order->get_currency(),
-			'totalAmount'  => wc_format_decimal( $order->get_total(), 2 ),
-			'lineItems'    => $line_items,
+			'externalId'  => (string) $order->get_id(),
+			'platform'    => 'woocommerce',
+			'orderNumber' => (string) $order->get_order_number(),
+			'name'        => '#' . $order->get_order_number(),
+			'createdAt'   => $created_at,
+			'tags'        => array(),
+			'currency'    => $order->get_currency(),
+			'totalAmount' => wc_format_decimal( $order->get_total(), 2 ),
+			'lineItems'   => $line_items,
 		);
 
 		$customer_email = $order->get_billing_email();

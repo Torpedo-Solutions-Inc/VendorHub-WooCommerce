@@ -54,10 +54,7 @@ class VendorHub_Settings {
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
-
-
 		VendorHub_Privacy::init();
-
 	}
 
 
@@ -79,7 +76,6 @@ class VendorHub_Settings {
 		$tabs['vendorhub'] = __( 'VendorHub', 'vendorhub-woocommerce' );
 
 		return $tabs;
-
 	}
 
 
@@ -93,7 +89,6 @@ class VendorHub_Settings {
 	public static function render_settings_page() {
 
 		require VENDORHUB_WC_PLUGIN_DIR . 'admin/settings-page.php';
-
 	}
 
 
@@ -112,11 +107,7 @@ class VendorHub_Settings {
 
 		}
 
-
-
 		check_admin_referer( 'vendorhub_save_settings', 'vendorhub_settings_nonce' );
-
-
 
 		$api_base = isset( $_POST['vendorhub_api_base'] ) ? esc_url_raw( wp_unslash( $_POST['vendorhub_api_base'] ) ) : '';
 
@@ -126,12 +117,9 @@ class VendorHub_Settings {
 
 		}
 
-
-
 		wp_safe_redirect( VendorHub_Connect::settings_url( 'saved' ) );
 
 		exit;
-
 	}
 
 
@@ -150,20 +138,15 @@ class VendorHub_Settings {
 
 		}
 
-
-
 		check_admin_referer( 'vendorhub_connect' );
-
-
 
 		$result = VendorHub_Connect::connect();
 
-		$flag   = $result['success'] ? 'connected' : 'connect_error';
+		$flag = $result['success'] ? 'connected' : 'connect_error';
 
 		wp_safe_redirect( VendorHub_Connect::settings_url( $flag, $result['message'] ) );
 
 		exit;
-
 	}
 
 
@@ -182,16 +165,11 @@ class VendorHub_Settings {
 
 		}
 
-
-
 		check_admin_referer( 'vendorhub_redirect_connect' );
-
-
 
 		wp_safe_redirect( VendorHub_Connect::get_redirect_url() );
 
 		exit;
-
 	}
 
 
@@ -210,26 +188,19 @@ class VendorHub_Settings {
 
 		}
 
-
-
 		check_admin_referer( 'vendorhub_save_credentials' );
 
-
-
-		$store_id  = isset( $_POST['vendorhub_manual_store_id'] ) ? sanitize_text_field( wp_unslash( $_POST['vendorhub_manual_store_id'] ) ) : '';
+		$store_id = isset( $_POST['vendorhub_manual_store_id'] ) ? sanitize_text_field( wp_unslash( $_POST['vendorhub_manual_store_id'] ) ) : '';
 
 		$api_token = isset( $_POST['vendorhub_manual_api_token'] ) ? sanitize_text_field( wp_unslash( $_POST['vendorhub_manual_api_token'] ) ) : '';
 
-
-
 		$result = VendorHub_Connect::save_credentials( $store_id, $api_token );
 
-		$flag   = $result['success'] ? 'connected' : 'connect_error';
+		$flag = $result['success'] ? 'connected' : 'connect_error';
 
 		wp_safe_redirect( VendorHub_Connect::settings_url( $flag, $result['message'] ) );
 
 		exit;
-
 	}
 
 
@@ -248,18 +219,13 @@ class VendorHub_Settings {
 
 		}
 
-
-
 		check_admin_referer( 'vendorhub_disconnect' );
-
-
 
 		$result = VendorHub_Connect::disconnect();
 
 		wp_safe_redirect( VendorHub_Connect::settings_url( 'disconnected', $result['message'] ) );
 
 		exit;
-
 	}
 
 
@@ -278,20 +244,15 @@ class VendorHub_Settings {
 
 		}
 
-
-
 		check_admin_referer( 'vendorhub_test_connection' );
-
-
 
 		$result = VendorHub_Connect::test_connection();
 
-		$flag   = $result['success'] ? 'test_ok' : 'test_error';
+		$flag = $result['success'] ? 'test_ok' : 'test_error';
 
 		wp_safe_redirect( VendorHub_Connect::settings_url( $flag, $result['message'] ) );
 
 		exit;
-
 	}
 
 
@@ -312,8 +273,6 @@ class VendorHub_Settings {
 
 		}
 
-
-
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$status = isset( $_GET['vendorhub_status'] ) ? sanitize_key( wp_unslash( $_GET['vendorhub_status'] ) ) : '';
@@ -322,21 +281,15 @@ class VendorHub_Settings {
 
 		$msg = isset( $_GET['vendorhub_message'] ) ? sanitize_text_field( wp_unslash( $_GET['vendorhub_message'] ) ) : '';
 
-
-
 		if ( empty( $status ) ) {
 
 			return;
 
 		}
 
-
-
 		$is_error = in_array( $status, array( 'connect_error', 'test_error' ), true );
 
-		$class    = $is_error ? 'notice-error' : 'notice-success';
-
-
+		$class = $is_error ? 'notice-error' : 'notice-success';
 
 		if ( ! $msg ) {
 
@@ -352,26 +305,19 @@ class VendorHub_Settings {
 
 			);
 
-			$msg      = isset( $messages[ $status ] ) ? $messages[ $status ] : '';
+			$msg = isset( $messages[ $status ] ) ? $messages[ $status ] : '';
 
 		}
-
-
 
 		if ( $msg ) {
 
 			printf(
-
 				'<div class="notice %1$s is-dismissible"><p>%2$s</p></div>',
-
 				esc_attr( $class ),
-
 				esc_html( $msg )
-
 			);
 
 		}
-
 	}
 
 
@@ -403,9 +349,5 @@ class VendorHub_Settings {
 		}
 
 		return VENDORHUB_WC_DEFAULT_API_BASE;
-
 	}
-
 }
-
-

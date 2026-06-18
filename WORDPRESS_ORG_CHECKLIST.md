@@ -58,6 +58,7 @@ svn ci -m "Tag version 1.0.0"
 | Rule | Status | Notes |
 | --- | --- | --- |
 | `WordPress.Security.NonceVerification.Recommended` | Accepted | OAuth return query params validated server-side; merchant must be `manage_woocommerce`. |
+| `WordPress.WP.Capabilities.Unknown` (`manage_woocommerce`) | Accepted | WooCommerce capability; not in core WP role map used by PHPCS. |
 | Inline `<style>` in settings page | Accepted | Scoped admin-only styles; no frontend output. |
 
 ## Audit fixes (2025-06)

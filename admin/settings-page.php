@@ -16,15 +16,15 @@ defined( 'ABSPATH' ) || exit;
 
 
 
-$api_base             = VendorHub_Settings::get_api_base();
+$api_base = VendorHub_Settings::get_api_base();
 
-$store_id             = get_option( 'vendorhub_store_id', '' );
+$store_id = get_option( 'vendorhub_store_id', '' );
 
-$is_connected         = VendorHub_Connect::is_connected();
+$is_connected = VendorHub_Connect::is_connected();
 
-$supports_direct      = VendorHub_Connect::supports_direct_connect();
+$supports_direct = VendorHub_Connect::supports_direct_connect();
 
-$privacy_url          = VendorHub_Privacy::PRIVACY_URL;
+$privacy_url = VendorHub_Privacy::PRIVACY_URL;
 
 ?>
 
@@ -35,11 +35,8 @@ $privacy_url          = VendorHub_Privacy::PRIVACY_URL;
 	<?php
 
 	esc_html_e(
-
 		'Connect your WooCommerce store to VendorHub for vendor order routing. Manage vendors and responses in the VendorHub web dashboard.',
-
 		'vendorhub-woocommerce'
-
 	);
 
 	?>
@@ -179,11 +176,8 @@ $privacy_url          = VendorHub_Privacy::PRIVACY_URL;
 	<?php
 
 	esc_html_e(
-
 		'Alternatively, copy your Store ID and API token from VendorHub → Settings → API access and paste them below.',
-
 		'vendorhub-woocommerce'
-
 	);
 
 	?>
@@ -347,19 +341,13 @@ $privacy_url          = VendorHub_Privacy::PRIVACY_URL;
 	<?php
 
 	printf(
-
 		/* translators: %s: VendorHub privacy policy URL */
 
 		esc_html__(
-
 			'This plugin sends order data to VendorHub cloud servers. See the suggested privacy policy text under Settings → Privacy, or read %s.',
-
 			'vendorhub-woocommerce'
-
 		),
-
 		'<a href="' . esc_url( $privacy_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $privacy_url ) . '</a>'
-
 	);
 
 	?>

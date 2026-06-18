@@ -47,28 +47,21 @@ class VendorHub_Connect {
 				'success' => false,
 
 				'message' => __(
-
 					'Direct connect requires VENDORHUB_WC_CONNECT_SECRET in wp-config.php. Use the VendorHub redirect button or paste credentials from your VendorHub dashboard.',
-
 					'vendorhub-woocommerce'
-
 				),
 
 			);
 
 		}
 
-
-
-		$site_url     = self::get_site_url();
+		$site_url = self::get_site_url();
 
 		$display_name = get_bloginfo( 'name' );
 
 		$plugin_token = self::get_or_create_plugin_token();
 
-		$timestamp    = (string) (int) round( microtime( true ) * 1000 );
-
-
+		$timestamp = (string) (int) round( microtime( true ) * 1000 );
 
 		$payload = array(
 			'siteUrl'     => $site_url,
@@ -86,22 +79,16 @@ class VendorHub_Connect {
 			);
 		}
 
-		$signature         = VendorHub_HMAC::sign( $connect_secret, $timestamp, $signing_payload );
+		$signature            = VendorHub_HMAC::sign( $connect_secret, $timestamp, $signing_payload );
 		$payload['signature'] = $signature;
-		$body              = wp_json_encode( $payload );
-
-
+		$body                 = wp_json_encode( $payload );
 
 		$api_base = VendorHub_Settings::get_api_base();
 
-		$url      = trailingslashit( $api_base ) . 'api/connect/woocommerce';
-
-
+		$url = trailingslashit( $api_base ) . 'api/connect/woocommerce';
 
 		$response = wp_safe_remote_post(
-
 			$url,
-
 			array(
 
 				'timeout' => 30,
@@ -115,10 +102,7 @@ class VendorHub_Connect {
 				'body'    => $body,
 
 			)
-
 		);
-
-
 
 		if ( is_wp_error( $response ) ) {
 
@@ -134,15 +118,11 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		$code = wp_remote_retrieve_response_code( $response );
 
-		$raw  = wp_remote_retrieve_body( $response );
+		$raw = wp_remote_retrieve_body( $response );
 
 		$data = json_decode( $raw, true );
-
-
 
 		if ( 201 !== (int) $code || ! is_array( $data ) ) {
 
@@ -160,10 +140,7 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		return self::save_credentials( (string) $data['storeId'], (string) $data['apiToken'], $plugin_token );
-
 	}
 
 
@@ -186,11 +163,9 @@ class VendorHub_Connect {
 
 	public static function save_credentials( $store_id, $api_token, $plugin_token = '' ) {
 
-		$store_id  = sanitize_text_field( $store_id );
+		$store_id = sanitize_text_field( $store_id );
 
 		$api_token = sanitize_text_field( $api_token );
-
-
 
 		if ( empty( $store_id ) || empty( $api_token ) ) {
 
@@ -204,15 +179,11 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		if ( empty( $plugin_token ) ) {
 
 			$plugin_token = self::get_or_create_plugin_token();
 
 		}
-
-
 
 		update_option( 'vendorhub_store_id', $store_id, false );
 
@@ -220,11 +191,7 @@ class VendorHub_Connect {
 
 		update_option( 'vendorhub_plugin_token', sanitize_text_field( $plugin_token ), false );
 
-
-
 		self::log( 'Connected store ' . $store_id );
-
-
 
 		return array(
 
@@ -235,7 +202,6 @@ class VendorHub_Connect {
 			'store_id' => $store_id,
 
 		);
-
 	}
 
 
@@ -254,11 +220,9 @@ class VendorHub_Connect {
 
 		$plugin_token = self::get_or_create_plugin_token();
 
-		$api_base     = VendorHub_Settings::get_api_base();
+		$api_base = VendorHub_Settings::get_api_base();
 
-		$return_url   = self::settings_url();
-
-
+		$return_url = self::settings_url();
 
 		return add_query_arg(
 			array(
@@ -268,7 +232,6 @@ class VendorHub_Connect {
 			),
 			trailingslashit( $api_base ) . 'connect/woocommerce'
 		);
-
 	}
 
 
@@ -287,8 +250,6 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth return uses signed server-side redirect.
 
 		if ( ! isset( $_GET['page'], $_GET['tab'], $_GET['vendorhub_store_id'], $_GET['vendorhub_api_token'] ) ) {
@@ -296,8 +257,6 @@ class VendorHub_Connect {
 			return;
 
 		}
-
-
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
@@ -307,8 +266,6 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$store_id = sanitize_text_field( wp_unslash( $_GET['vendorhub_store_id'] ) );
@@ -317,16 +274,11 @@ class VendorHub_Connect {
 
 		$api_token = sanitize_text_field( wp_unslash( $_GET['vendorhub_api_token'] ) );
 
-
-
 		self::save_credentials( $store_id, $api_token );
-
-
 
 		wp_safe_redirect( self::settings_url( 'connected' ) );
 
 		exit;
-
 	}
 
 
@@ -349,11 +301,7 @@ class VendorHub_Connect {
 
 		delete_option( 'vendorhub_plugin_token' );
 
-
-
 		self::log( 'Disconnected from VendorHub' );
-
-
 
 		return array(
 
@@ -362,7 +310,6 @@ class VendorHub_Connect {
 			'message' => __( 'Disconnected from VendorHub.', 'vendorhub-woocommerce' ),
 
 		);
-
 	}
 
 
@@ -379,11 +326,9 @@ class VendorHub_Connect {
 
 	public static function test_connection() {
 
-		$store_id  = get_option( 'vendorhub_store_id', '' );
+		$store_id = get_option( 'vendorhub_store_id', '' );
 
 		$api_token = get_option( 'vendorhub_api_token', '' );
-
-
 
 		if ( empty( $store_id ) || empty( $api_token ) ) {
 
@@ -397,18 +342,12 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		$api_base = VendorHub_Settings::get_api_base();
 
-		$url      = trailingslashit( $api_base ) . 'api/stores/' . rawurlencode( $store_id ) . '/orders';
-
-
+		$url = trailingslashit( $api_base ) . 'api/stores/' . rawurlencode( $store_id ) . '/orders';
 
 		$response = wp_safe_remote_post(
-
 			$url,
-
 			array(
 
 				'timeout' => 20,
@@ -424,10 +363,7 @@ class VendorHub_Connect {
 				'body'    => '{}',
 
 			)
-
 		);
-
-
 
 		if ( is_wp_error( $response ) ) {
 
@@ -441,11 +377,7 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		$code = (int) wp_remote_retrieve_response_code( $response );
-
-
 
 		if ( 401 === $code ) {
 
@@ -459,8 +391,6 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		if ( 400 === $code || 200 === $code ) {
 
 			return array(
@@ -473,24 +403,18 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		return array(
 
 			'success' => false,
 
 			'message' => sprintf(
-
 				/* translators: %d: HTTP status code */
 
 				__( 'Unexpected response from VendorHub (HTTP %d).', 'vendorhub-woocommerce' ),
-
 				$code
-
 			),
 
 		);
-
 	}
 
 
@@ -507,12 +431,11 @@ class VendorHub_Connect {
 
 	public static function is_connected() {
 
-		$store_id  = get_option( 'vendorhub_store_id', '' );
+		$store_id = get_option( 'vendorhub_store_id', '' );
 
 		$api_token = get_option( 'vendorhub_api_token', '' );
 
 		return ! empty( $store_id ) && ! empty( $api_token );
-
 	}
 
 
@@ -530,7 +453,6 @@ class VendorHub_Connect {
 	public static function supports_direct_connect() {
 
 		return ! empty( self::get_connect_secret() );
-
 	}
 
 
@@ -554,7 +476,6 @@ class VendorHub_Connect {
 		}
 
 		return '';
-
 	}
 
 
@@ -579,14 +500,11 @@ class VendorHub_Connect {
 
 		}
 
-
-
 		$token = bin2hex( random_bytes( 32 ) );
 
 		update_option( 'vendorhub_plugin_token', $token, false );
 
 		return $token;
-
 	}
 
 
@@ -604,7 +522,6 @@ class VendorHub_Connect {
 	public static function get_site_url() {
 
 		return untrailingslashit( home_url( '/' ) );
-
 	}
 
 
@@ -638,7 +555,6 @@ class VendorHub_Connect {
 		}
 
 		return $url;
-
 	}
 
 
@@ -660,9 +576,5 @@ class VendorHub_Connect {
 			wc_get_logger()->info( $message, array( 'source' => 'vendorhub' ) );
 
 		}
-
 	}
-
 }
-
-
