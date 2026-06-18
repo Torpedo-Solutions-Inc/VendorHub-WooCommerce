@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate version matches tag
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          VERSION=$(grep -m1 "Version:" vendorhub.php | sed 's/.*Version:[[:space:]]*//')
+          STABLE=$(grep -m1 "Stable tag:" readme.txt | awk '{print $3}')
+          if [ "$TAG" != "$VERSION" ] || [ "$TAG" != "$STABLE" ]; then
+            echo "Tag ($TAG), plugin header ($VERSION), and readme stable tag ($STABLE) must match."
+            exit 1
+          fi
+
+      - name: Build plugin ZIP
+        run: |
+          zip -r "vendorhub-woocommerce-${GITHUB_REF_NAME}.zip" \
+            vendorhub.php readme.txt uninstall.php includes admin \
+            -x "*.DS_Store" -x "*.git*"
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vendorhub-woocommerce-${{ github.ref_name }}
+          path: vendorhub-woocommerce-${{ github.ref_name }}.zip
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: vendorhub-woocommerce-${{ github.ref_name }}.zip
+          generate_release_notes: true
