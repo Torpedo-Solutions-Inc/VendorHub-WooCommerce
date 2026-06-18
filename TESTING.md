@@ -126,9 +126,26 @@ Build ZIP and upload via **WordPress → Plugins → Add New → Upload**.
 
 ## 7. Callback — vendor accept → WC note
 
-
-
 VendorHub calls `POST {siteUrl}/wp-json/vendorhub/v1/order/{orderId}` with Bearer + HMAC headers.
+
+Example (replace values from your connected store):
+
+```bash
+ORDER_ID=123
+API_TOKEN="your-api-token"
+BODY='{"note":"Vendor accepted the order"}'
+TIMESTAMP=$(date +%s000)
+SIGNATURE=$(printf '%s.%s' "$TIMESTAMP" "$BODY" | openssl dgst -sha256 -hmac "$API_TOKEN" | awk '{print $2}')
+
+curl -X POST "https://your-store.example/wp-json/vendorhub/v1/order/${ORDER_ID}" \
+  -H "Authorization: Bearer ${API_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -H "X-VendorHub-Timestamp: ${TIMESTAMP}" \
+  -H "X-VendorHub-Signature: ${SIGNATURE}" \
+  -d "$BODY"
+```
+
+Expect HTTP 200 and a new order note in WooCommerce. Replay with a bad signature — expect HTTP 401.
 
 
 

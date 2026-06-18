@@ -70,59 +70,25 @@ class VendorHub_Connect {
 
 
 
-		$signing_payload = wp_json_encode(
-
-			array(
-
-				'siteUrl'     => $site_url,
-
-				'displayName' => $display_name,
-
-				'pluginToken' => $plugin_token,
-
-				'timestamp'   => $timestamp,
-
-			)
-
+		$payload = array(
+			'siteUrl'     => $site_url,
+			'displayName' => $display_name,
+			'pluginToken' => $plugin_token,
+			'timestamp'   => $timestamp,
 		);
 
-
+		$signing_payload = wp_json_encode( $payload );
 
 		if ( false === $signing_payload ) {
-
 			return array(
-
 				'success' => false,
-
 				'message' => __( 'Failed to encode connect payload.', 'vendorhub-woocommerce' ),
-
 			);
-
 		}
 
-
-
-		$signature = VendorHub_HMAC::sign( $connect_secret, $timestamp, $signing_payload );
-
-
-
-		$body = wp_json_encode(
-
-			array(
-
-				'siteUrl'     => $site_url,
-
-				'displayName' => $display_name,
-
-				'pluginToken' => $plugin_token,
-
-				'timestamp'   => $timestamp,
-
-				'signature'   => $signature,
-
-			)
-
-		);
+		$signature         = VendorHub_HMAC::sign( $connect_secret, $timestamp, $signing_payload );
+		$payload['signature'] = $signature;
+		$body              = wp_json_encode( $payload );
 
 
 
@@ -295,19 +261,12 @@ class VendorHub_Connect {
 
 
 		return add_query_arg(
-
 			array(
-
-				'siteUrl'     => rawurlencode( self::get_site_url() ),
-
-				'pluginToken' => rawurlencode( $plugin_token ),
-
-				'returnUrl'   => rawurlencode( $return_url ),
-
+				'siteUrl'     => self::get_site_url(),
+				'pluginToken' => $plugin_token,
+				'returnUrl'   => $return_url,
 			),
-
 			trailingslashit( $api_base ) . 'connect/woocommerce'
-
 		);
 
 	}
@@ -675,9 +634,7 @@ class VendorHub_Connect {
 		}
 
 		if ( $message ) {
-
-			$url = add_query_arg( 'vendorhub_message', rawurlencode( $message ), $url );
-
+			$url = add_query_arg( 'vendorhub_message', $message, $url );
 		}
 
 		return $url;

@@ -12,7 +12,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class VendorHub_Order_Sync {
 
-	const SYNCED_META_KEY = '_vendorhub_synced';
+	const SYNCED_META_KEY  = '_vendorhub_synced';
+	const SYNCING_META_KEY = '_vendorhub_syncing';
 
 	/**
 	 * Register WooCommerce hooks.
@@ -69,6 +70,13 @@ class VendorHub_Order_Sync {
 			return;
 		}
 
+		if ( 'yes' === $order->get_meta( self::SYNCING_META_KEY ) ) {
+			return;
+		}
+
+		$order->update_meta_data( self::SYNCING_META_KEY, 'yes' );
+		$order->save();
+
 		$store_id  = get_option( 'vendorhub_store_id', '' );
 		$api_token = get_option( 'vendorhub_api_token', '' );
 		$api_base  = VendorHub_Settings::get_api_base();
@@ -81,6 +89,7 @@ class VendorHub_Order_Sync {
 		$body    = wp_json_encode( $payload );
 
 		if ( false === $body ) {
+			self::clear_syncing_meta( $order );
 			self::log( 'Failed to encode order ' . $order->get_id() );
 			return;
 		}
@@ -100,6 +109,7 @@ class VendorHub_Order_Sync {
 		);
 
 		if ( is_wp_error( $response ) ) {
+			self::clear_syncing_meta( $order );
 			self::log( 'Order ' . $order->get_id() . ' ingest failed: ' . $response->get_error_message() );
 			return;
 		}
@@ -109,11 +119,13 @@ class VendorHub_Order_Sync {
 
 		if ( $code >= 200 && $code < 300 ) {
 			$order->update_meta_data( self::SYNCED_META_KEY, 'yes' );
+			$order->delete_meta_data( self::SYNCING_META_KEY );
 			$order->save();
 			self::log( 'Order ' . $order->get_id() . ' forwarded to VendorHub' );
 			return;
 		}
 
+		self::clear_syncing_meta( $order );
 		self::log( 'Order ' . $order->get_id() . ' ingest rejected (' . $code . '): ' . $raw );
 	}
 
@@ -175,6 +187,11 @@ class VendorHub_Order_Sync {
 			'lineItems'    => $line_items,
 		);
 
+		$customer_email = $order->get_billing_email();
+		if ( $customer_email ) {
+			$normalized['customerEmail'] = $customer_email;
+		}
+
 		if ( ! empty( $shipping['address_1'] ) ) {
 			$normalized['shippingAddress'] = array(
 				'name'     => $shipping_name ? $shipping_name : __( 'Customer', 'vendorhub-woocommerce' ),
@@ -232,6 +249,16 @@ class VendorHub_Order_Sync {
 			return $user->display_name ? $user->display_name : $user->user_login;
 		}
 		return (string) $user_id;
+	}
+
+	/**
+	 * Clear in-flight sync lock so a later hook can retry.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 */
+	private static function clear_syncing_meta( $order ) {
+		$order->delete_meta_data( self::SYNCING_META_KEY );
+		$order->save();
 	}
 
 	/**

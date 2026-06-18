@@ -68,7 +68,7 @@ This plugin connects to VendorHub API hosts over HTTPS (default: `https://api.ve
 
 * **Connect** — site URL, store display name, per-site plugin token
 
-* **Order sync** — order number, line items, SKUs, vendor names, shipping address
+* **Order sync** — order number, line items, SKUs, vendor names, shipping address, customer email
 
 * **Inbound callbacks** — VendorHub POSTs status, notes, and tracking to your WordPress site
 

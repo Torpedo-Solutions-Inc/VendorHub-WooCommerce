@@ -7,12 +7,12 @@ Recommended plugin slug: **`vendorhub-woocommerce`** (alternate: `vendorhub-for-
 - [x] `phpcs.xml` with WordPress-Core + WordPress-Extra
 - [x] GitHub Actions: PHPCS on PR, release ZIP on tag
 - [x] `readme.txt` complete (stable tag, WC tested up to, PHP, FAQ, screenshots list, changelog)
-- [x] `assets/` folder with icon and banner placeholders
+- [ ] `assets/` — icon + banner PNGs committed on GitHub; `screenshot-1.png` … `screenshot-4.png` still needed (see `assets/README.md`)
 - [x] Privacy policy via `includes/class-vendorhub-privacy.php` + readme external services section
 - [x] No embedded VendorHub connect secret (redirect + manual token only; `VENDORHUB_WC_CONNECT_SECRET` wp-config for dev)
 - [x] Plugin works without connection (graceful "Not connected" state)
 - [x] GPL v2+ license in plugin header and readme
-- [x] VendorHub `docs/PLATFORM_INTEGRATION.md` synced
+- [x] `docs/PLATFORM_INTEGRATION.md` documents backend contract in this repo
 
 ## Manual steps (Torpedo Solutions account)
 
@@ -60,6 +60,17 @@ svn ci -m "Tag version 1.0.0"
 | `WordPress.Security.NonceVerification.Recommended` | Accepted | OAuth return query params validated server-side; merchant must be `manage_woocommerce`. |
 | Inline `<style>` in settings page | Accepted | Scoped admin-only styles; no frontend output. |
 
+## Audit fixes (2025-06)
+
+- [x] Redirect connect URL encoding — `add_query_arg()` only (no double `rawurlencode`)
+- [x] Admin notice message encoding — same fix in `settings_url()`
+- [x] Order sync race guard — `_vendorhub_syncing` meta lock
+- [x] Direct connect HMAC — sign single payload object before appending `signature`
+- [x] `customerEmail` in normalized order payload
+- [x] `index.php` silencers in `includes/` and `admin/`
+- [x] `docs/PLATFORM_INTEGRATION.md` in plugin repo
+- [ ] Staging E2E + Plugin Check — still required before submit
+
 ## Release workflow
 
 ```bash
@@ -77,5 +88,4 @@ git push origin v1.0.0
 
 ## Related docs
 
-- VendorHub: `docs/PLATFORM_INTEGRATION.md`
-- Plugin: `TESTING.md`, `README.md`
+- Plugin: `docs/PLATFORM_INTEGRATION.md`, `TESTING.md`, `README.md`

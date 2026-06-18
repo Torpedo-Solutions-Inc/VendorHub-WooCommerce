@@ -73,7 +73,7 @@ class VendorHub_Privacy {
 			) . '</p>',
 			'<h2>' . esc_html__( 'Local storage', 'vendorhub-woocommerce' ) . '</h2>',
 			'<p>' . esc_html__(
-				'The plugin stores connection credentials (store ID, API token, plugin token) in WordPress options. These are removed on uninstall unless you opt to keep data.',
+				'The plugin stores connection credentials (store ID, API token, plugin token) in WordPress options. These are removed on uninstall unless VENDORHUB_WC_KEEP_DATA is defined as true in wp-config.php.',
 				'vendorhub-woocommerce'
 			) . '</p>',
 		);

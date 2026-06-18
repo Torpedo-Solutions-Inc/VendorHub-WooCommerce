@@ -9,9 +9,10 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
 }
 
-$keep_data = get_option( 'vendorhub_keep_data', '' );
+$keep_data = ( defined( 'VENDORHUB_WC_KEEP_DATA' ) && VENDORHUB_WC_KEEP_DATA )
+	|| 'yes' === get_option( 'vendorhub_keep_data', '' );
 
-if ( 'yes' === $keep_data ) {
+if ( $keep_data ) {
 	return;
 }
 
