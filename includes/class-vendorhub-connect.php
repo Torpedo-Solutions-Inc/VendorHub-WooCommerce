@@ -177,11 +177,13 @@ class VendorHub_Connect {
 
 		if ( empty( $store_id ) || empty( $api_token ) ) {
 
+			self::log( 'Save credentials rejected: store ID and API token are required.' );
+
 			return array(
 
 				'success' => false,
 
-				'message' => __( 'Store ID and API token are required.', 'vendorhub-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
 			);
 
@@ -340,11 +342,13 @@ class VendorHub_Connect {
 
 		if ( empty( $store_id ) || empty( $api_token ) ) {
 
+			self::log( 'Connection test skipped: store is not connected.' );
+
 			return array(
 
 				'success' => false,
 
-				'message' => __( 'Store is not connected.', 'vendorhub-woocommerce' ),
+				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
 			);
 
@@ -375,11 +379,13 @@ class VendorHub_Connect {
 
 		if ( is_wp_error( $response ) ) {
 
+			self::log( 'Connection test failed: ' . $response->get_error_message() );
+
 			return array(
 
 				'success' => false,
 
-				'message' => $response->get_error_message(),
+				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
 			);
 
@@ -389,11 +395,13 @@ class VendorHub_Connect {
 
 		if ( 401 === $code ) {
 
+			self::log( 'Connection test authentication failed (401).' );
+
 			return array(
 
 				'success' => false,
 
-				'message' => __( 'Authentication failed. Reconnect to VendorHub.', 'vendorhub-woocommerce' ),
+				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
 			);
 
@@ -411,16 +419,15 @@ class VendorHub_Connect {
 
 		}
 
+		$raw = wp_remote_retrieve_body( $response );
+
+		self::log( 'Connection test unexpected response (' . $code . '): ' . $raw );
+
 		return array(
 
 			'success' => false,
 
-			'message' => sprintf(
-				/* translators: %d: HTTP status code */
-
-				__( 'Unexpected response from VendorHub (HTTP %d).', 'vendorhub-woocommerce' ),
-				$code
-			),
+			'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
 		);
 	}
@@ -540,15 +547,13 @@ class VendorHub_Connect {
 
 	 *
 
-	 * @param string $status  Status flag.
-
-	 * @param string $message Optional message.
+	 * @param string $status Status flag.
 
 	 * @return string
 
 	 */
 
-	public static function settings_url( $status = '', $message = '' ) {
+	public static function settings_url( $status = '' ) {
 
 		$url = admin_url( 'admin.php?page=wc-settings&tab=vendorhub' );
 
@@ -556,10 +561,6 @@ class VendorHub_Connect {
 
 			$url = add_query_arg( 'vendorhub_status', $status, $url );
 
-		}
-
-		if ( $message ) {
-			$url = add_query_arg( 'vendorhub_message', $message, $url );
 		}
 
 		return $url;

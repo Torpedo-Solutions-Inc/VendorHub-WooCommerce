@@ -26,7 +26,7 @@ check() {
 echo "=== VendorHub plugin E2E verification ==="
 echo ""
 
-echo "--- Production connect endpoint (HEAD) ---"
+echo "--- Production connect endpoint (GET) ---"
 connect_code="$(curl -sS -o /dev/null -w '%{http_code}' "${API_BASE}/connect/woocommerce" || true)"
 echo "GET ${API_BASE}/connect/woocommerce → HTTP ${connect_code}"
 if [[ "${connect_code}" =~ ^(200|301|302|303|307|308)$ ]]; then

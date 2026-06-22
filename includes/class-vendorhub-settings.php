@@ -142,10 +142,6 @@ class VendorHub_Settings {
 
 		$result = VendorHub_Connect::connect();
 
-		if ( ! $result['success'] ) {
-			VendorHub_Connect::log( $result['message'] );
-		}
-
 		wp_safe_redirect( VendorHub_Connect::settings_url( $result['success'] ? 'connected' : 'connect_error' ) );
 
 		exit;
@@ -198,10 +194,6 @@ class VendorHub_Settings {
 
 		$result = VendorHub_Connect::save_credentials( $store_id, $api_token );
 
-		if ( ! $result['success'] ) {
-			VendorHub_Connect::log( $result['message'] );
-		}
-
 		wp_safe_redirect( VendorHub_Connect::settings_url( $result['success'] ? 'connected' : 'connect_error' ) );
 
 		exit;
@@ -251,10 +243,6 @@ class VendorHub_Settings {
 		check_admin_referer( 'vendorhub_test_connection' );
 
 		$result = VendorHub_Connect::test_connection();
-
-		if ( ! $result['success'] ) {
-			VendorHub_Connect::log( $result['message'] );
-		}
 
 		wp_safe_redirect( VendorHub_Connect::settings_url( $result['success'] ? 'test_ok' : 'test_error' ) );
 
