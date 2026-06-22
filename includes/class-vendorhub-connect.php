@@ -112,7 +112,7 @@ class VendorHub_Connect {
 
 				'success' => false,
 
-				'message' => $response->get_error_message(),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
 			);
 
@@ -124,7 +124,7 @@ class VendorHub_Connect {
 
 		$data = json_decode( $raw, true );
 
-		if ( 201 !== (int) $code || ! is_array( $data ) ) {
+		if ( ! in_array( (int) $code, array( 200, 201 ), true ) || ! is_array( $data ) ) {
 
 			$error = is_array( $data ) && isset( $data['error'] ) ? (string) $data['error'] : $raw;
 
@@ -134,10 +134,18 @@ class VendorHub_Connect {
 
 				'success' => false,
 
-				'message' => $error ? $error : __( 'Connect request failed.', 'vendorhub-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
 			);
 
+		}
+
+		if ( empty( $data['storeId'] ) || empty( $data['apiToken'] ) ) {
+			self::log( 'Connect response missing storeId or apiToken (' . $code . '): ' . $raw );
+			return array(
+				'success' => false,
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+			);
 		}
 
 		return self::save_credentials( (string) $data['storeId'], (string) $data['apiToken'], $plugin_token );

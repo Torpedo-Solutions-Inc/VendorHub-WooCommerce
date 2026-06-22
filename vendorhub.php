@@ -5,6 +5,7 @@
  * Description:       Connect your WooCommerce store to VendorHub for vendor order routing and fulfillment updates.
  * Version:           1.0.0
  * Requires at least: 5.8
+ * Tested up to:      6.7
  * Requires PHP:      7.4
  * Author:            Torpedo Solutions Inc
  * Author URI:        https://vendorhub.app
@@ -30,6 +31,18 @@ require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-order-sync.php'
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-rest.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-privacy.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-settings.php';
+
+/**
+ * Load plugin text domain for translations.
+ */
+function vendorhub_wc_load_textdomain() {
+	load_plugin_textdomain(
+		'vendorhub-woocommerce',
+		false,
+		dirname( plugin_basename( VENDORHUB_WC_PLUGIN_FILE ) ) . '/languages'
+	);
+}
+add_action( 'init', 'vendorhub_wc_load_textdomain' );
 
 /**
  * Bootstrap plugin after WooCommerce loads.

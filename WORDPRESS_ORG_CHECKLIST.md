@@ -5,9 +5,9 @@ Recommended plugin slug: **`vendorhub-woocommerce`** (alternate: `vendorhub-for-
 ## Pre-submission (automated / repo)
 
 - [x] `phpcs.xml` with WordPress-Core + WordPress-Extra
-- [x] GitHub Actions: PHPCS on PR, release ZIP on tag (project `composer.json` + `shivammathur/setup-php`)
+- [x] GitHub Actions: PHPCS on PR, Plugin Check on PR (`plugin-check.yml`), release ZIP on tag
 - [x] `readme.txt` complete (stable tag, WC tested up to, PHP, FAQ, screenshots list, changelog)
-- [ ] `assets/` — icon + banner PNGs committed on GitHub; `screenshot-1.png` … `screenshot-4.png` still needed (see `assets/README.md`)
+- [x] `assets/` — icon + banner PNGs committed; `screenshot-1.png` … `screenshot-4.png` (branded mockups — replace with real admin captures before final org listing if desired)
 - [x] Privacy policy via `includes/class-vendorhub-privacy.php` + readme external services section
 - [x] No embedded VendorHub connect secret (redirect + manual token only; `VENDORHUB_WC_CONNECT_SECRET` wp-config for dev)
 - [x] Plugin works without connection (graceful "Not connected" state)
@@ -45,13 +45,13 @@ svn cp trunk tags/1.0.0
 svn ci -m "Tag version 1.0.0"
 ```
 
-7. **Plugin Check** — Install [Plugin Check](https://wordpress.org/plugins/plugin-check/) on a test site; run against trunk ZIP. Document any warnings in this file.
+7. **Plugin Check** — CI runs `wordpress/plugin-check-action` on PRs. Optionally re-run [Plugin Check](https://wordpress.org/plugins/plugin-check/) on a test site before SVN submit; document any warnings below.
 
-8. **Screenshots** — Replace readme placeholders with real PNGs in `assets/` (screenshot-1.png … screenshot-4.png) after UI is final.
+8. **Screenshots** — Branded mockups committed in `assets/`. Replace with real admin captures before final org listing if desired.
 
 9. **GlotPress** — After approval, contribute translations via https://translate.wordpress.org/
 
-10. **VendorHub production** — Ensure `https://api.vendorhub.app/connect/woocommerce` redirect flow is live before promoting org listing.
+10. **VendorHub production** — Run `./scripts/e2e-verify.sh` (connect route probe). As of 2026-06-22, `https://api.vendorhub.app/connect/woocommerce` returned HTTP 503; confirm redirect flow is live before promoting org listing.
 
 ## PHPCS warnings (documented)
 
@@ -70,7 +70,17 @@ svn ci -m "Tag version 1.0.0"
 - [x] `customerEmail` in normalized order payload
 - [x] `index.php` silencers in `includes/` and `admin/`
 - [x] `docs/PLATFORM_INTEGRATION.md` in plugin repo
-- [ ] Staging E2E + Plugin Check — still required before submit
+
+## Audit fixes (2026-06)
+
+- [x] `load_plugin_textdomain()` + `languages/` directory
+- [x] Plugin header `Tested up to: 6.7` aligned with readme
+- [x] Direct connect accepts HTTP 200 or 201
+- [x] Admin redirect notices use generic messages (details in WC logs only)
+- [x] Line item `price` sent as unit price (line total ÷ quantity)
+- [x] WordPress.org assets (icons, banners, screenshots)
+- [x] Plugin Check GitHub Action + `scripts/e2e-verify.sh`
+- [ ] Staging E2E: redirect connect → order ingest → callback verified on live/staging store
 
 ## Release workflow
 
@@ -83,9 +93,8 @@ git push origin v1.0.0
 ## Do not submit until
 
 - [ ] Torpedo explicitly requests WordPress.org submission
-- [ ] Staging E2E: redirect connect → order ingest → callback verified
-- [ ] Final screenshot assets captured
-- [ ] Plugin Check run with zero errors on test site
+- [ ] Staging E2E: redirect connect → order ingest → callback verified (`scripts/e2e-verify.sh` + TESTING.md)
+- [ ] Plugin Check CI green on main (and optional local run with zero errors)
 
 ## Related docs
 

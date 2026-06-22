@@ -148,6 +148,9 @@ class VendorHub_Order_Sync {
 			$product = $item->get_product();
 			$vendor  = self::resolve_line_item_vendor( $item, $product );
 
+			$quantity  = max( 1, (int) $item->get_quantity() );
+			$unit_price = (float) $item->get_total() / $quantity;
+
 			$line_items[] = array(
 				'externalId'        => (string) $item->get_id(),
 				'productExternalId' => (string) $item->get_product_id(),
@@ -156,7 +159,7 @@ class VendorHub_Order_Sync {
 				'quantity'          => $item->get_quantity(),
 				'sku'               => $product ? $product->get_sku() : '',
 				'vendor'            => $vendor,
-				'price'             => wc_format_decimal( $item->get_total(), 2 ),
+				'price'             => wc_format_decimal( $unit_price, 2 ),
 				'variantTitle'      => $item->get_variation_id() ? $item->get_name() : null,
 			);
 		}

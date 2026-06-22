@@ -147,6 +147,14 @@ curl -X POST "https://your-store.example/wp-json/vendorhub/v1/order/${ORDER_ID}"
 
 Expect HTTP 200 and a new order note in WooCommerce. Replay with a bad signature — expect HTTP 401.
 
+Or run the helper script (after connect + test order):
+
+```bash
+SITE_URL=https://your-store.example API_TOKEN=your-token ORDER_ID=123 ./scripts/e2e-verify.sh
+```
+
+The script also probes `GET {API_BASE}/connect/woocommerce` reachability.
+
 
 
 ## Acceptance checklist

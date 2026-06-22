@@ -65,7 +65,7 @@ Required `NormalizedOrder` fields:
 | `createdAt` | ISO 8601 |
 | `lineItems[]` | Order line items |
 
-Also sent when available: `customerEmail`, `shippingAddress`, `currency`, `totalAmount`, line-item `vendor`/`sku`/`price`.
+Also sent when available: `customerEmail`, `shippingAddress`, `currency`, `totalAmount`, line-item `vendor`/`sku`/`price` (unit price per quantity).
 
 Idempotency: order meta `_vendorhub_synced` (in-flight lock: `_vendorhub_syncing`).
 

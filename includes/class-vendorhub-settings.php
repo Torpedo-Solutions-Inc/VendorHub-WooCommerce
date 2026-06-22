@@ -142,9 +142,11 @@ class VendorHub_Settings {
 
 		$result = VendorHub_Connect::connect();
 
-		$flag = $result['success'] ? 'connected' : 'connect_error';
+		if ( ! $result['success'] ) {
+			VendorHub_Connect::log( $result['message'] );
+		}
 
-		wp_safe_redirect( VendorHub_Connect::settings_url( $flag, $result['message'] ) );
+		wp_safe_redirect( VendorHub_Connect::settings_url( $result['success'] ? 'connected' : 'connect_error' ) );
 
 		exit;
 	}
@@ -196,9 +198,11 @@ class VendorHub_Settings {
 
 		$result = VendorHub_Connect::save_credentials( $store_id, $api_token );
 
-		$flag = $result['success'] ? 'connected' : 'connect_error';
+		if ( ! $result['success'] ) {
+			VendorHub_Connect::log( $result['message'] );
+		}
 
-		wp_safe_redirect( VendorHub_Connect::settings_url( $flag, $result['message'] ) );
+		wp_safe_redirect( VendorHub_Connect::settings_url( $result['success'] ? 'connected' : 'connect_error' ) );
 
 		exit;
 	}
@@ -221,9 +225,9 @@ class VendorHub_Settings {
 
 		check_admin_referer( 'vendorhub_disconnect' );
 
-		$result = VendorHub_Connect::disconnect();
+		VendorHub_Connect::disconnect();
 
-		wp_safe_redirect( VendorHub_Connect::settings_url( 'disconnected', $result['message'] ) );
+		wp_safe_redirect( VendorHub_Connect::settings_url( 'disconnected' ) );
 
 		exit;
 	}
@@ -248,9 +252,11 @@ class VendorHub_Settings {
 
 		$result = VendorHub_Connect::test_connection();
 
-		$flag = $result['success'] ? 'test_ok' : 'test_error';
+		if ( ! $result['success'] ) {
+			VendorHub_Connect::log( $result['message'] );
+		}
 
-		wp_safe_redirect( VendorHub_Connect::settings_url( $flag, $result['message'] ) );
+		wp_safe_redirect( VendorHub_Connect::settings_url( $result['success'] ? 'test_ok' : 'test_error' ) );
 
 		exit;
 	}
@@ -277,10 +283,6 @@ class VendorHub_Settings {
 
 		$status = isset( $_GET['vendorhub_status'] ) ? sanitize_key( wp_unslash( $_GET['vendorhub_status'] ) ) : '';
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
-		$msg = isset( $_GET['vendorhub_message'] ) ? sanitize_text_field( wp_unslash( $_GET['vendorhub_message'] ) ) : '';
-
 		if ( empty( $status ) ) {
 
 			return;
@@ -291,23 +293,23 @@ class VendorHub_Settings {
 
 		$class = $is_error ? 'notice-error' : 'notice-success';
 
-		if ( ! $msg ) {
+		$messages = array(
 
-			$messages = array(
+			'saved'          => __( 'Settings saved.', 'vendorhub-woocommerce' ),
 
-				'saved'        => __( 'Settings saved.', 'vendorhub-woocommerce' ),
+			'connected'      => __( 'Successfully connected to VendorHub.', 'vendorhub-woocommerce' ),
 
-				'connected'    => __( 'Successfully connected to VendorHub.', 'vendorhub-woocommerce' ),
+			'disconnected'   => __( 'Disconnected from VendorHub.', 'vendorhub-woocommerce' ),
 
-				'disconnected' => __( 'Disconnected from VendorHub.', 'vendorhub-woocommerce' ),
+			'test_ok'        => __( 'Connection test successful.', 'vendorhub-woocommerce' ),
 
-				'test_ok'      => __( 'Connection test successful.', 'vendorhub-woocommerce' ),
+			'connect_error'  => __( 'Could not connect to VendorHub. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
-			);
+			'test_error'     => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
 
-			$msg = isset( $messages[ $status ] ) ? $messages[ $status ] : '';
+		);
 
-		}
+		$msg = isset( $messages[ $status ] ) ? $messages[ $status ] : '';
 
 		if ( $msg ) {
 
