@@ -27,8 +27,10 @@ See `TESTING.md` for ngrok end-to-end steps, `docs/PLATFORM_INTEGRATION.md` for 
 **PowerShell (Windows):**
 
 ```powershell
-Compress-Archive -Path vendorhub.php, readme.txt, uninstall.php, includes, admin -DestinationPath vendorhub-woocommerce.zip -Force
+.\scripts\build-zip.ps1
 ```
+
+Do **not** use `Compress-Archive` — it stores backslash paths in the ZIP and WordPress upload fails with "Could not copy file".
 
 **Bash (macOS/Linux):**
 
