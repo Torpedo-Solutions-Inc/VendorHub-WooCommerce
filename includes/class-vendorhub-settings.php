@@ -54,6 +54,8 @@ class VendorHub_Settings {
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
+		add_filter( 'allowed_redirect_hosts', array( __CLASS__, 'allow_vendorhub_redirect_hosts' ) );
+
 		VendorHub_Privacy::init();
 	}
 
@@ -186,7 +188,7 @@ class VendorHub_Settings {
 
 		}
 
-		check_admin_referer( 'vendorhub_save_credentials' );
+		check_admin_referer( 'vendorhub_save_credentials', 'vendorhub_save_credentials_nonce' );
 
 		$store_id = isset( $_POST['vendorhub_manual_store_id'] ) ? sanitize_text_field( wp_unslash( $_POST['vendorhub_manual_store_id'] ) ) : '';
 
@@ -339,5 +341,56 @@ class VendorHub_Settings {
 		}
 
 		return VENDORHUB_WC_DEFAULT_API_BASE;
+	}
+
+
+
+	/**
+
+	 * Nonce-protected admin-post.php URL for settings actions.
+
+	 *
+
+	 * @param string $action       admin-post action name.
+
+	 * @param string $nonce_action Nonce action name.
+
+	 * @return string
+
+	 */
+
+	public static function admin_post_url( $action, $nonce_action ) {
+
+		return wp_nonce_url(
+			admin_url( 'admin-post.php?action=' . $action ),
+			$nonce_action
+		);
+	}
+
+
+
+	/**
+
+	 * Allow redirects to the configured VendorHub API host.
+
+	 *
+
+	 * @param string[] $hosts Allowed redirect hosts.
+
+	 * @return string[]
+
+	 */
+
+	public static function allow_vendorhub_redirect_hosts( $hosts ) {
+
+		$host = wp_parse_url( self::get_api_base(), PHP_URL_HOST );
+
+		if ( $host && ! in_array( $host, $hosts, true ) ) {
+
+			$hosts[] = $host;
+
+		}
+
+		return $hosts;
 	}
 }
