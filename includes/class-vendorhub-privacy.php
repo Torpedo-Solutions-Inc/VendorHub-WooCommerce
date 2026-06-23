@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class VendorHub_Privacy {
 
-	const PRIVACY_URL = 'https://vendorhub.app/privacy';
+	const PRIVACY_URL = 'https://www.myvendorhub.com/privacy';
 
 	/**
 	 * Bootstrap privacy hooks.
@@ -54,7 +54,7 @@ class VendorHub_Privacy {
 			) . '</p>',
 			'<h2>' . esc_html__( 'External services', 'vendorhub-woocommerce' ) . '</h2>',
 			'<p>' . esc_html__(
-				'This plugin communicates with VendorHub API hosts over HTTPS. Default production host: https://api.vendorhub.app. Self-hosted VendorHub installations may use a custom API base URL configured in WooCommerce → Settings → VendorHub.',
+				'This plugin communicates with VendorHub API hosts over HTTPS. Default production host: https://www.myvendorhub.com. Self-hosted VendorHub installations may use a custom API base URL configured in WooCommerce → Settings → VendorHub.',
 				'vendorhub-woocommerce'
 			) . '</p>',
 			'<ul>',

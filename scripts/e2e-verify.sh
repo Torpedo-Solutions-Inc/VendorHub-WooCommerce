@@ -6,7 +6,7 @@ set -euo pipefail
 SITE_URL="${SITE_URL:-}"
 API_TOKEN="${API_TOKEN:-}"
 ORDER_ID="${ORDER_ID:-}"
-API_BASE="${API_BASE:-https://api.vendorhub.app}"
+API_BASE="${API_BASE:-https://www.myvendorhub.com}"
 
 pass=0
 fail=0

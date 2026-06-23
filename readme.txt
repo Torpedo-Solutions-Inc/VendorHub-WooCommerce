@@ -30,7 +30,7 @@ Connect WooCommerce to VendorHub for multi-vendor order routing and fulfillment 
 
 
 
-VendorHub for WooCommerce forwards new orders to [VendorHub](https://vendorhub.app) and receives vendor responses (status, notes, tracking) back on your store.
+VendorHub for WooCommerce forwards new orders to [VendorHub](https://www.myvendorhub.com) and receives vendor responses (status, notes, tracking) back on your store.
 
 
 
@@ -62,7 +62,7 @@ Merchants manage vendors, rules, and responses in the **VendorHub web dashboard*
 
 
 
-This plugin connects to VendorHub API hosts over HTTPS (default: `https://api.vendorhub.app`). Data transmitted:
+This plugin connects to VendorHub API hosts over HTTPS (default: `https://www.myvendorhub.com`). Data transmitted:
 
 
 
@@ -74,7 +74,7 @@ This plugin connects to VendorHub API hosts over HTTPS (default: `https://api.ve
 
 
 
-No VendorHub admin passwords are stored. See [VendorHub Privacy Policy](https://vendorhub.app/privacy).
+No VendorHub admin passwords are stored. See [VendorHub Privacy Policy](https://www.myvendorhub.com/privacy).
 
 
 
@@ -130,7 +130,7 @@ Define `VENDORHUB_WC_CONNECT_SECRET` in `wp-config.php` matching your VendorHub 
 
 
 
-In the VendorHub web dashboard at https://vendorhub.app (or your self-hosted URL). This plugin only forwards orders and applies vendor responses.
+In the VendorHub web dashboard at https://www.myvendorhub.com (or your self-hosted URL). This plugin only forwards orders and applies vendor responses.
 
 
 
@@ -170,7 +170,7 @@ Line-item vendor is read from product/line meta keys: `_vendor`, `vendor`, `_wcv
 
 
 
-Order and fulfillment data including customer name, shipping address, and phone when present on the order. VendorHub does not sell personal data. See https://vendorhub.app/privacy.
+Order and fulfillment data including customer name, shipping address, and phone when present on the order. VendorHub does not sell personal data. See https://www.myvendorhub.com/privacy.
 
 
 

@@ -94,7 +94,7 @@ Plugin implementation: `VendorHub_REST`.
 **WooCommerce → Settings → VendorHub**
 
 - Connection status, redirect connect, manual credentials, disconnect, test connection.
-- API base URL (default `https://api.vendorhub.app`).
+- API base URL (default `https://www.myvendorhub.com`).
 - No embedded VendorHub admin secrets in distributed builds.
 
 ## Platform requirements

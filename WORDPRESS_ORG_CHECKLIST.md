@@ -51,7 +51,7 @@ svn ci -m "Tag version 1.0.0"
 
 9. **GlotPress** — After approval, contribute translations via https://translate.wordpress.org/
 
-10. **VendorHub production** — Run `./scripts/e2e-verify.sh` (connect route probe). As of 2026-06-22, `https://api.vendorhub.app/connect/woocommerce` returned HTTP 503; confirm redirect flow is live before promoting org listing.
+10. **VendorHub production** — Run `./scripts/e2e-verify.sh` (connect route probe). Confirm `https://www.myvendorhub.com/connect/woocommerce` is live before promoting org listing.
 
 ## PHPCS warnings (documented)
 

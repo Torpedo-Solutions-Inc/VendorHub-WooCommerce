@@ -165,7 +165,7 @@ $admin_post_url  = admin_url( 'admin-post.php' );
 					placeholder="<?php echo esc_attr( VENDORHUB_WC_DEFAULT_API_BASE ); ?>"
 				/>
 				<p class="description">
-					<?php esc_html_e( 'VendorHub backend URL (e.g. https://api.vendorhub.app or your ngrok tunnel).', 'vendorhub-woocommerce' ); ?>
+					<?php esc_html_e( 'VendorHub backend URL (default: https://www.myvendorhub.com). Use a custom URL for self-hosted or ngrok dev.', 'vendorhub-woocommerce' ); ?>
 				</p>
 			</td>
 		</tr>

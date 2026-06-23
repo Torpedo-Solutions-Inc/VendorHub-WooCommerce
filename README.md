@@ -1,6 +1,6 @@
 # VendorHub for WooCommerce
 
-WordPress plugin that connects WooCommerce stores to [VendorHub](https://vendorhub.app).
+WordPress plugin that connects WooCommerce stores to [VendorHub](https://www.myvendorhub.com).
 
 **Recommended WordPress.org slug:** `vendorhub-woocommerce`
 
