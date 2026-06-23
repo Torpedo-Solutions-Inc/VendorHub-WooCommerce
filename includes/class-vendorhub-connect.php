@@ -228,20 +228,327 @@ class VendorHub_Connect {
 
 	public static function get_redirect_url() {
 
+		if ( self::uses_oauth_connect() ) {
+
+			return self::get_oauth_authorize_url();
+
+		}
+
 		$plugin_token = self::get_or_create_plugin_token();
 
 		$api_base = VendorHub_Settings::get_api_base();
 
 		$return_url = self::settings_url();
 
+		$state = self::create_connect_state();
+
 		return add_query_arg(
 			array(
 				'siteUrl'     => self::get_site_url(),
 				'pluginToken' => $plugin_token,
 				'returnUrl'   => $return_url,
+				'state'       => $state,
 			),
 			trailingslashit( $api_base ) . 'connect/woocommerce'
 		);
+	}
+
+
+
+	/**
+	 * Whether OAuth connect is enabled (Phase 2 — requires platform OAuth server).
+	 *
+	 * @return bool
+	 */
+	public static function uses_oauth_connect() {
+		return (bool) apply_filters(
+			'vendorhub_wc_use_oauth_connect',
+			'' !== self::get_oauth_client_id()
+		);
+	}
+
+
+
+	/**
+	 * Public OAuth client ID (wp-config constant or filter; evaluated after plugins load).
+	 *
+	 * @return string
+	 */
+	public static function get_oauth_client_id() {
+		if ( defined( 'VENDORHUB_WC_OAUTH_CLIENT_ID' ) && VENDORHUB_WC_OAUTH_CLIENT_ID ) {
+			return (string) VENDORHUB_WC_OAUTH_CLIENT_ID;
+		}
+
+		return (string) apply_filters( 'vendorhub_wc_oauth_client_id', '' );
+	}
+
+
+
+	/**
+	 * Build OAuth authorize URL (Phase 2).
+	 *
+	 * @return string
+	 */
+	public static function get_oauth_authorize_url() {
+		$api_base     = VendorHub_Settings::get_api_base();
+		$state        = self::create_connect_state();
+		$code_verifier = self::create_pkce_verifier();
+		$challenge    = self::pkce_challenge( $code_verifier );
+
+		set_transient(
+			self::connect_state_transient_key(),
+			array(
+				'state'         => $state,
+				'code_verifier' => $code_verifier,
+			),
+			15 * MINUTE_IN_SECONDS
+		);
+
+		return add_query_arg(
+			array(
+				'client_id'             => self::get_oauth_client_id(),
+				'redirect_uri'          => self::oauth_callback_url(),
+				'response_type'         => 'code',
+				'state'                 => $state,
+				'site_url'              => self::get_site_url(),
+				'plugin_token'          => self::get_or_create_plugin_token(),
+				'scope'                 => 'orders:write callbacks:receive',
+				'code_challenge'        => $challenge,
+				'code_challenge_method' => 'S256',
+			),
+			trailingslashit( $api_base ) . 'oauth/authorize'
+		);
+	}
+
+
+
+	/**
+	 * Filterable OAuth callback URL for local dev / ngrok.
+	 *
+	 * @return string
+	 */
+	public static function oauth_callback_url() {
+		return apply_filters(
+			'vendorhub_wc_oauth_callback_url',
+			admin_url( 'admin-post.php?action=vendorhub_oauth_callback' )
+		);
+	}
+
+
+
+	/**
+	 * VendorHub merchant dashboard URL for the connected store.
+	 *
+	 * @return string
+	 */
+	public static function get_dashboard_url() {
+		$api_base = VendorHub_Settings::get_api_base();
+		$store_id = get_option( 'vendorhub_store_id', '' );
+		$path     = apply_filters( 'vendorhub_wc_dashboard_path', 'stores/{store_id}' );
+
+		if ( $store_id ) {
+			$path = str_replace( '{store_id}', rawurlencode( $store_id ), $path );
+		} else {
+			$path = apply_filters( 'vendorhub_wc_dashboard_fallback_path', 'dashboard' );
+		}
+
+		return trailingslashit( $api_base ) . ltrim( $path, '/' );
+	}
+
+
+
+	/**
+	 * Create and persist CSRF state for connect redirect.
+	 *
+	 * @return string
+	 */
+	public static function create_connect_state() {
+		$state = wp_create_nonce( 'vendorhub_connect_state_' . get_current_user_id() );
+
+		set_transient(
+			self::connect_state_transient_key(),
+			array( 'state' => $state ),
+			15 * MINUTE_IN_SECONDS
+		);
+
+		return $state;
+	}
+
+
+
+	/**
+	 * Validate connect state from redirect return.
+	 *
+	 * @param string $state State query param from VendorHub.
+	 * @return bool
+	 */
+	public static function validate_connect_state( $state ) {
+		$state = sanitize_text_field( $state );
+
+		if ( empty( $state ) ) {
+			return true;
+		}
+
+		$stored = get_transient( self::connect_state_transient_key() );
+
+		if ( ! is_array( $stored ) || empty( $stored['state'] ) ) {
+			return false;
+		}
+
+		if ( ! hash_equals( (string) $stored['state'], $state ) ) {
+			return false;
+		}
+
+		delete_transient( self::connect_state_transient_key() );
+
+		return true;
+	}
+
+
+
+	/**
+	 * Read and clear stored connect state (OAuth token exchange).
+	 *
+	 * @param string $state State query param from VendorHub.
+	 * @return array<string,string>|false
+	 */
+	public static function consume_connect_state( $state ) {
+		$state = sanitize_text_field( $state );
+
+		if ( empty( $state ) ) {
+			return false;
+		}
+
+		$stored = get_transient( self::connect_state_transient_key() );
+
+		if ( ! is_array( $stored ) || empty( $stored['state'] ) ) {
+			return false;
+		}
+
+		if ( ! hash_equals( (string) $stored['state'], $state ) ) {
+			return false;
+		}
+
+		delete_transient( self::connect_state_transient_key() );
+
+		return $stored;
+	}
+
+
+
+	/**
+	 * Exchange OAuth authorization code for store credentials (Phase 2).
+	 *
+	 * @param string $code  Authorization code from VendorHub.
+	 * @param string $state CSRF state from redirect.
+	 * @return array{success:bool,message:string,store_id?:string}
+	 */
+	public static function exchange_oauth_code( $code, $state ) {
+		$stored = self::consume_connect_state( $state );
+
+		if ( false === $stored ) {
+			self::log( 'OAuth exchange rejected: invalid or expired state.' );
+			return array(
+				'success' => false,
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+			);
+		}
+
+		$body = array(
+			'grant_type'    => 'authorization_code',
+			'code'          => sanitize_text_field( $code ),
+			'redirect_uri'  => self::oauth_callback_url(),
+			'client_id'     => self::get_oauth_client_id(),
+			'code_verifier' => isset( $stored['code_verifier'] ) ? $stored['code_verifier'] : '',
+		);
+
+		$api_base = VendorHub_Settings::get_api_base();
+		$url      = trailingslashit( $api_base ) . 'oauth/token';
+
+		$response = wp_safe_remote_post(
+			$url,
+			array(
+				'timeout' => 30,
+				'headers' => array(
+					'Content-Type' => 'application/json',
+				),
+				'body'    => wp_json_encode( $body ),
+			)
+		);
+
+		if ( is_wp_error( $response ) ) {
+			self::log( 'OAuth token exchange failed: ' . $response->get_error_message() );
+			return array(
+				'success' => false,
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+			);
+		}
+
+		$http_code = wp_remote_retrieve_response_code( $response );
+		$raw       = wp_remote_retrieve_body( $response );
+		$data      = json_decode( $raw, true );
+
+		if ( ! in_array( (int) $http_code, array( 200, 201 ), true ) || ! is_array( $data ) ) {
+			self::log( 'OAuth token exchange rejected (' . $http_code . '): ' . $raw );
+			return array(
+				'success' => false,
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+			);
+		}
+
+		$store_id  = isset( $data['storeId'] ) ? (string) $data['storeId'] : '';
+		$api_token = isset( $data['apiToken'] ) ? (string) $data['apiToken'] : '';
+
+		if ( empty( $store_id ) && ! empty( $data['store_id'] ) ) {
+			$store_id = (string) $data['store_id'];
+		}
+		if ( empty( $api_token ) && ! empty( $data['access_token'] ) ) {
+			$api_token = (string) $data['access_token'];
+		}
+
+		if ( empty( $store_id ) || empty( $api_token ) ) {
+			self::log( 'OAuth token response missing storeId or apiToken.' );
+			return array(
+				'success' => false,
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+			);
+		}
+
+		return self::save_credentials( $store_id, $api_token );
+	}
+
+
+
+	/**
+	 * Transient key for connect state tied to current user.
+	 *
+	 * @return string
+	 */
+	private static function connect_state_transient_key() {
+		return 'vendorhub_connect_state_' . get_current_user_id();
+	}
+
+
+
+	/**
+	 * Generate PKCE code verifier (Phase 2 OAuth).
+	 *
+	 * @return string
+	 */
+	private static function create_pkce_verifier() {
+		return rtrim( strtr( base64_encode( random_bytes( 32 ) ), '+/', '-_' ), '=' );
+	}
+
+
+
+	/**
+	 * S256 PKCE challenge from verifier.
+	 *
+	 * @param string $verifier Code verifier.
+	 * @return string
+	 */
+	private static function pkce_challenge( $verifier ) {
+		return rtrim( strtr( base64_encode( hash( 'sha256', $verifier, true ) ), '+/', '-_' ), '=' );
 	}
 
 
@@ -283,6 +590,20 @@ class VendorHub_Connect {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$api_token = sanitize_text_field( wp_unslash( $_GET['vendorhub_api_token'] ) );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
+
+		if ( ! self::validate_connect_state( $state ) ) {
+
+			self::log( 'Connect return rejected: invalid or expired state.' );
+
+			wp_safe_redirect( self::settings_url( 'connect_error' ) );
+
+			exit;
+
+		}
 
 		self::save_credentials( $store_id, $api_token );
 

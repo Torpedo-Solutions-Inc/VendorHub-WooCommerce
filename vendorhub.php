@@ -30,7 +30,10 @@ require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-connect.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-order-sync.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-rest.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-privacy.php';
+require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-onboarding.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-settings.php';
+
+register_activation_hook( VENDORHUB_WC_PLUGIN_FILE, array( 'VendorHub_Onboarding', 'activate' ) );
 
 /**
  * Load plugin text domain for translations.

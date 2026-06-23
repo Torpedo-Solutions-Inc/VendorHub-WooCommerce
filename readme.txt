@@ -40,7 +40,11 @@ VendorHub for WooCommerce forwards new orders to [VendorHub](https://www.myvendo
 
 * Redirect connect to VendorHub (no embedded secrets — WordPress.org ready)
 
-* Manual Store ID + API token paste from VendorHub dashboard
+* Permissions disclosure onboarding before external redirect
+
+* Open VendorHub dashboard link after connect
+
+* Manual Store ID + API token paste (Advanced)
 
 * Automatic order forwarding on checkout
 
@@ -86,11 +90,11 @@ No VendorHub admin passwords are stored. See [VendorHub Privacy Policy](https://
 
 2. Activate **VendorHub for WooCommerce** (requires WooCommerce 6.0+).
 
-3. Go to **WooCommerce → Settings → VendorHub**.
+3. You are redirected once to **WooCommerce → Settings → VendorHub** to review permissions.
 
-4. Click **Connect to VendorHub** and sign in on VendorHub (redirect flow), **or** paste Store ID + API token from VendorHub → Settings.
+4. Check the permissions disclosure, then click **Connect to VendorHub** and sign in on VendorHub (redirect flow), **or** use **Advanced → Manual connection** to paste Store ID + API token from VendorHub → Settings.
 
-5. Place a test order — it should appear in VendorHub within seconds.
+5. After connecting, open the **VendorHub dashboard** from the settings page and place a test order — it should appear in VendorHub within seconds.
 
 
 
@@ -102,7 +106,7 @@ No VendorHub admin passwords are stored. See [VendorHub Privacy Policy](https://
 
 
 
-No VendorHub secrets are embedded in the plugin. Click **Connect to VendorHub** to open VendorHub with your `siteUrl` and a per-site `pluginToken`. After you sign in, VendorHub returns `storeId` and `apiToken` to this settings page.
+No VendorHub secrets are embedded in the plugin. Review the permissions checklist, accept the disclosure, then click **Connect to VendorHub** to open VendorHub with your `siteUrl`, a per-site `pluginToken`, and a CSRF `state` parameter. After you sign in, VendorHub returns `storeId` and `apiToken` to this settings page.
 
 
 
@@ -110,7 +114,7 @@ No VendorHub secrets are embedded in the plugin. Click **Connect to VendorHub** 
 
 
 
-Create or open your WooCommerce store in VendorHub, then copy **Store ID** and **API token** from VendorHub → Settings → API access. Paste them under **Manual connection** in WooCommerce → Settings → VendorHub.
+Create or open your WooCommerce store in VendorHub, then copy **Store ID** and **API token** from VendorHub → Settings → API access. Paste them under **Advanced → Manual connection** in WooCommerce → Settings → VendorHub.
 
 
 
@@ -178,11 +182,11 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 
 
-1. WooCommerce → Settings → VendorHub connection page (connected state)
+1. WooCommerce → Settings → VendorHub onboarding (permissions disclosure)
 
-2. Connect to VendorHub redirect flow
+2. Connected state with Open VendorHub dashboard
 
-3. Manual Store ID and API token entry
+3. Advanced manual Store ID and API token entry
 
 4. Order note applied after vendor accept in VendorHub
 

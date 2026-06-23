@@ -10,7 +10,10 @@ Recommended plugin slug: **`vendorhub-woocommerce`** (alternate: `vendorhub-for-
 - [x] `assets/` — icon + banner PNGs committed; `screenshot-1.png` … `screenshot-4.png` (branded mockups — replace with real admin captures before final org listing if desired)
 - [x] Privacy policy via `includes/class-vendorhub-privacy.php` + readme external services section
 - [x] No embedded VendorHub connect secret (redirect + manual token only; `VENDORHUB_WC_CONNECT_SECRET` wp-config for dev)
-- [x] Plugin works without connection (graceful "Not connected" state)
+- [x] Plugin works without connection (graceful onboarding + "Not connected" state)
+- [x] Post-activation onboarding redirect with permissions disclosure (Phase 1 UX)
+- [x] Dashboard URL documented in `docs/PLATFORM_INTEGRATION.md` (`vendorhub_wc_dashboard_path` filter)
+- [x] OAuth client scaffolding (Phase 2 — `VendorHub_Connect::get_oauth_client_id()`, PKCE, callback handler)
 - [x] GPL v2+ license in plugin header and readme
 - [x] `docs/PLATFORM_INTEGRATION.md` documents backend contract in this repo
 
