@@ -110,7 +110,7 @@ $dashboard_url        = $is_connected ? VendorHub_Connect::get_dashboard_url() :
 			<?php endforeach; ?>
 		</ul>
 
-		<?php wp_nonce_field( 'vendorhub_redirect_connect' ); ?>
+		<?php wp_nonce_field( 'vendorhub_redirect_connect', 'vendorhub_redirect_connect_nonce', false ); ?>
 
 		<p>
 			<label for="vendorhub_accept_permissions">

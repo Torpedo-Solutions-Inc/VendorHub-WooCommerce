@@ -169,7 +169,7 @@ class VendorHub_Settings {
 
 		}
 
-		check_admin_referer( 'vendorhub_redirect_connect' );
+		check_admin_referer( 'vendorhub_redirect_connect', 'vendorhub_redirect_connect_nonce' );
 
 		$accepted = isset( $_POST['vendorhub_accept_permissions'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['vendorhub_accept_permissions'] ) );
 
