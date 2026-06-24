@@ -20,7 +20,14 @@ WordPress plugin that connects WooCommerce stores to [VendorHub](https://www.myv
 | **Manual token** | Offline / org review v1 | No — paste Store ID + API token from VendorHub Settings |
 | **Direct** | Self-hosted / ngrok dev | `VENDORHUB_WC_CONNECT_SECRET` in wp-config only |
 
-See `TESTING.md` for ngrok end-to-end steps, `docs/PLATFORM_INTEGRATION.md` for the backend contract, and `WORDPRESS_ORG_CHECKLIST.md` for submission readiness.
+See `TESTING.md` for ngrok end-to-end steps, `docs/PLATFORM_INTEGRATION.md` for the backend contract (including [SSO launch](docs/PLATFORM_INTEGRATION.md#sso-launch-return-visits--plugin-v2)), and `WORDPRESS_ORG_CHECKLIST.md` for submission readiness.
+
+## Tests
+
+```bash
+composer install
+composer run test
+```
 
 ## Build ZIP
 

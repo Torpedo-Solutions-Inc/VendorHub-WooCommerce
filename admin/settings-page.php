@@ -17,7 +17,7 @@ $supports_direct      = VendorHub_Connect::supports_direct_connect();
 $privacy_url          = VendorHub_Privacy::PRIVACY_URL;
 $admin_post_url       = admin_url( 'admin-post.php' );
 $disclosure_items     = VendorHub_Onboarding::get_disclosure_checklist();
-$dashboard_url        = $is_connected ? VendorHub_Connect::get_dashboard_url() : '';
+$can_launch           = VendorHub_Launch::can_user_launch();
 
 ?>
 
@@ -61,14 +61,14 @@ $dashboard_url        = $is_connected ? VendorHub_Connect::get_dashboard_url() :
 	</table>
 
 	<p class="submit vendorhub-actions">
-		<a
-			href="<?php echo esc_url( $dashboard_url ); ?>"
-			class="button button-primary"
-			target="_blank"
-			rel="noopener noreferrer"
-		>
-			<?php esc_html_e( 'Open VendorHub dashboard', 'vendorhub-woocommerce' ); ?>
-		</a>
+		<?php if ( $can_launch ) : ?>
+			<a
+				href="<?php echo esc_url( VendorHub_Settings::admin_post_url( 'vendorhub_launch', 'vendorhub_launch' ) ); ?>"
+				class="button button-primary"
+			>
+				<?php esc_html_e( 'Open VendorHub', 'vendorhub-woocommerce' ); ?>
+			</a>
+		<?php endif; ?>
 		<a
 			href="<?php echo esc_url( VendorHub_Settings::admin_post_url( 'vendorhub_test_connection', 'vendorhub_test_connection' ) ); ?>"
 			class="button"

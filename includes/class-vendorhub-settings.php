@@ -54,6 +54,8 @@ class VendorHub_Settings {
 
 		add_action( 'admin_post_vendorhub_save_credentials', array( __CLASS__, 'handle_save_credentials' ) );
 
+		add_action( 'admin_post_vendorhub_launch', array( __CLASS__, 'handle_launch' ) );
+
 		add_action( 'admin_init', array( 'VendorHub_Connect', 'maybe_handle_redirect_return' ) );
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
@@ -294,6 +296,34 @@ class VendorHub_Settings {
 
 
 	/**
+	 * SSO launch handler — redirects to signed VendorHub /launch URL.
+	 */
+	public static function handle_launch() {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-woocommerce' ) );
+		}
+
+		check_admin_referer( 'vendorhub_launch' );
+
+		if ( ! VendorHub_Launch::can_launch() ) {
+			wp_safe_redirect( VendorHub_Connect::settings_url( 'launch_error' ) );
+			exit;
+		}
+
+		$url = VendorHub_Launch::build_launch_url();
+
+		if ( ! $url ) {
+			wp_safe_redirect( VendorHub_Connect::settings_url( 'launch_error' ) );
+			exit;
+		}
+
+		wp_safe_redirect( $url );
+		exit;
+	}
+
+
+
+	/**
 
 	 * Show admin notices from query args.
 
@@ -319,7 +349,7 @@ class VendorHub_Settings {
 
 		}
 
-		$is_error = in_array( $status, array( 'connect_error', 'test_error', 'permissions_required' ), true );
+		$is_error = in_array( $status, array( 'connect_error', 'test_error', 'permissions_required', 'launch_error' ), true );
 
 		$class = $is_error ? 'notice-error' : 'notice-success';
 
@@ -341,6 +371,8 @@ class VendorHub_Settings {
 
 			'permissions_required' => __( 'Please review and accept the permissions disclosure before connecting.', 'vendorhub-woocommerce' ),
 
+			'launch_error'         => __( 'Could not open VendorHub. Reconnect your store or see WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+
 		);
 
 		$msg = isset( $messages[ $status ] ) ? $messages[ $status ] : '';
@@ -349,11 +381,11 @@ class VendorHub_Settings {
 
 			echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p>' . esc_html( $msg );
 
-			if ( 'connected' === $status && VendorHub_Connect::is_connected() ) {
+			if ( 'connected' === $status && VendorHub_Launch::can_user_launch() ) {
 
-				echo ' <a href="' . esc_url( VendorHub_Connect::get_dashboard_url() ) . '" class="button button-primary" target="_blank" rel="noopener noreferrer" style="margin-left:8px;vertical-align:middle;">';
+				echo ' <a href="' . esc_url( self::admin_post_url( 'vendorhub_launch', 'vendorhub_launch' ) ) . '" class="button button-primary" style="margin-left:8px;vertical-align:middle;">';
 
-				esc_html_e( 'Open VendorHub dashboard', 'vendorhub-woocommerce' );
+				esc_html_e( 'Open VendorHub', 'vendorhub-woocommerce' );
 
 				echo '</a>';
 

@@ -49,8 +49,9 @@ Build ZIP and upload via **WordPress → Plugins → Add New → Upload**.
 3. Accept permissions → click **Connect to VendorHub**
 4. Sign in on VendorHub `/connect/woocommerce`
 5. Confirm connect — browser returns to WP settings with credentials saved
-6. Confirm success notice includes **Open VendorHub dashboard**
-7. Click **Test connection**
+6. Confirm success notice includes **Open VendorHub**
+7. Click **Open VendorHub** — browser should redirect to `{API_BASE}/launch?...` and land on VendorHub `/app` without a login prompt
+8. Click **Test connection**
 
 ## 5. Manual token paste
 
@@ -69,18 +70,28 @@ Build ZIP and upload via **WordPress → Plugins → Add New → Upload**.
 1. Click **Disconnect** — status shows Not connected, onboarding permissions screen returns
 2. Reconnect via redirect or manual token
 
-## 8. Capability check
+## 8. SSO launch (return visits)
 
-Log in as a user **without** `manage_woocommerce` — confirm connect admin-post URLs return Unauthorized.
+1. With store connected, open **WooCommerce → Settings → VendorHub**
+2. Confirm **Open VendorHub** is visible (not shown when disconnected)
+3. Click **Open VendorHub** — expect redirect to `{API_BASE}/launch?store=…&ts=…&user=…&sig=…`
+4. VendorHub should set a session cookie and redirect to `/app` without login
+5. Log in as a user **without** `manage_woocommerce` — **Open VendorHub** admin-post URL should return Unauthorized
 
-## 9. Forward a test order
+See `docs/PLATFORM_INTEGRATION.md` → **SSO launch (return visits — plugin v2+)** for the signing contract.
+
+## 9. Capability check
+
+Log in as a user **without** `manage_woocommerce` — confirm connect and launch admin-post URLs return Unauthorized.
+
+## 10. Forward a test order
 
 1. Create a WC product with vendor meta `_vendor` = `Test Vendor` (optional)
 2. Place a test order
 3. Check **WooCommerce → Status → Logs → vendorhub**
 4. Confirm order in VendorHub dashboard
 
-## 10. Callback — vendor accept → WC note
+## 11. Callback — vendor accept → WC note
 
 VendorHub calls `POST {siteUrl}/wp-json/vendorhub/v1/order/{orderId}` with Bearer + HMAC headers.
 
@@ -111,7 +122,7 @@ SITE_URL=https://your-store.example API_TOKEN=your-token ORDER_ID=123 ./scripts/
 
 The script also probes `GET {API_BASE}/connect/woocommerce` reachability.
 
-## 11. OAuth connect (Phase 2 — when platform ready)
+## 12. OAuth connect (Phase 2 — when platform ready)
 
 1. Platform staging must expose `/oauth/authorize` and `/oauth/token`
 2. Register public OAuth client ID with VendorHub
@@ -129,7 +140,8 @@ add_filter( 'vendorhub_wc_oauth_client_id', fn() => 'your-public-client-id' );
 
 - [ ] Fresh install → onboarding redirect → permissions before external redirect
 - [ ] Redirect connect saves `storeId` + `apiToken`
-- [ ] Connected state shows dashboard link
+- [ ] Connected state shows **Open VendorHub** (SSO launch)
+- [ ] SSO launch lands on VendorHub `/app` without re-login
 - [ ] Manual token paste works (Advanced)
 - [ ] Direct HMAC connect works (Advanced, dev only)
 - [ ] New WC order ingested in VendorHub

@@ -66,6 +66,47 @@ Response: { storeId, apiToken }  (or access_token mapped per platform spec)
 - Fallback when no store ID: `vendorhub_wc_dashboard_fallback_path` (default `dashboard`).
 - Plugin implementation: `VendorHub_Connect::get_dashboard_url()`.
 
+### SSO launch (return visits — plugin v2+)
+
+After connect, merchants can open VendorHub from wp-admin without signing in again (similar to an installed Shopify app).
+
+```
+GET {VENDORHUB_BASE}/launch?store={storeId}&ts={timestamp_ms}&user={wp_user_id}&sig={hex_hmac}
+```
+
+| Query param | Required | Value |
+| --- | --- | --- |
+| `store` | yes | Saved VendorHub store ID (e.g. `wc-example.com`) |
+| `ts` | yes | Unix timestamp in milliseconds (string) |
+| `user` | recommended | Current WordPress user ID (string) |
+| `sig` | yes | HMAC-SHA256 hex signature |
+
+**Signing secret:** per-site `plugin_token` stored in wp-options (`vendorhub_plugin_token`); same value sent as `plugin_token` during OAuth connect. VendorHub stores it as `credentials.callbackToken`.
+
+**Body JSON** (compact, no extra whitespace):
+
+```json
+{"storeId":"wc-example.com","wpUserId":"42"}
+```
+
+If the `user` query param is omitted, omit `wpUserId` from the JSON body:
+
+```json
+{"storeId":"wc-example.com"}
+```
+
+**Signature:**
+
+```
+sig = HMAC-SHA256( key = plugin_token, message = "{ts}.{body}" ).hex
+```
+
+Server accepts ±5 minutes clock skew. On success, VendorHub sets a web session cookie and redirects to `/app`.
+
+- Plugin implementation: `VendorHub_Launch::build_launch_url()`, `VendorHub_Settings::handle_launch()`.
+- Admin UI: **Open VendorHub** button on WooCommerce → Settings → VendorHub when connected (`VendorHub_Launch::can_user_launch()`).
+- Cross-repo reference: VendorHub `app/utils/woocommerce-launch.server.ts` (`signWooCommerceLaunchUrl()` / `validateWooCommerceLaunch()`).
+
 ### Manual token paste
 
 Merchant copies **Store ID** + **API token** from VendorHub → Settings → API access.
@@ -141,7 +182,7 @@ Plugin implementation: `VendorHub_REST`.
 **WooCommerce → Settings → VendorHub**
 
 - **Not connected:** Permissions disclosure + accept checkbox + Connect CTA; Advanced section for manual credentials, API base URL, dev HMAC connect.
-- **Connected:** Status, Open dashboard, Test connection, Disconnect; Advanced for developer settings.
+- **Connected:** Status, Open VendorHub (SSO launch), Test connection, Disconnect; Advanced for developer settings.
 - No embedded VendorHub admin secrets in distributed builds.
 
 ## Platform requirements

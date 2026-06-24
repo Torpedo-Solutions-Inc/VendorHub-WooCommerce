@@ -24,3 +24,6 @@ jobs:
 
       - name: Run PHPCS
         run: composer run phpcs
+
+      - name: Run PHPUnit
+        run: composer run test

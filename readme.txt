@@ -40,9 +40,9 @@ VendorHub for WooCommerce forwards new orders to [VendorHub](https://www.myvendo
 
 * Redirect connect to VendorHub (no embedded secrets — WordPress.org ready)
 
-* Permissions disclosure onboarding before external redirect
+* Open VendorHub from wp-admin after connect (signed SSO launch — no re-login)
 
-* Open VendorHub dashboard link after connect
+* Permissions disclosure onboarding before external redirect
 
 * Manual Store ID + API token paste (Advanced)
 
@@ -94,7 +94,9 @@ No VendorHub admin passwords are stored. See [VendorHub Privacy Policy](https://
 
 4. Check the permissions disclosure, then click **Connect to VendorHub** and sign in on VendorHub (redirect flow), **or** use **Advanced → Manual connection** to paste Store ID + API token from VendorHub → Settings.
 
-5. After connecting, open the **VendorHub dashboard** from the settings page and place a test order — it should appear in VendorHub within seconds.
+5. After connecting, click **Open VendorHub** on the settings page to return to your dashboard without signing in again, and place a test order — it should appear in VendorHub within seconds.
+
+Integrators: see `docs/PLATFORM_INTEGRATION.md` → **SSO launch (return visits — plugin v2+)** for the signing contract.
 
 
 
@@ -184,7 +186,7 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 1. WooCommerce → Settings → VendorHub onboarding (permissions disclosure)
 
-2. Connected state with Open VendorHub dashboard
+2. Connected state with Open VendorHub (SSO launch)
 
 3. Advanced manual Store ID and API token entry
 
