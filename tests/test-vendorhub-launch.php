@@ -19,7 +19,6 @@ class VendorHub_Launch_Test extends PHPUnit\Framework\TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		Monkey\setUp();
-		VendorHub_Test_Connect::$connected = false;
 	}
 
 	/**
@@ -106,8 +105,6 @@ class VendorHub_Launch_Test extends PHPUnit\Framework\TestCase {
 	 * Open action unavailable when the store is not connected.
 	 */
 	public function test_can_user_launch_false_when_not_connected() {
-		VendorHub_Test_Connect::$connected = false;
-
 		Functions\when( 'get_option' )->alias(
 			function ( $key ) {
 				if ( 'vendorhub_plugin_token' === $key ) {
@@ -125,19 +122,7 @@ class VendorHub_Launch_Test extends PHPUnit\Framework\TestCase {
 	 * Launch is unavailable when the store is not connected.
 	 */
 	public function test_can_launch_false_when_not_connected() {
-		VendorHub_Test_Connect::$connected = false;
-
-		Functions\when( 'get_option' )->alias(
-			function ( $key ) {
-				if ( 'vendorhub_store_id' === $key ) {
-					return 'wc-example.com';
-				}
-				if ( 'vendorhub_plugin_token' === $key ) {
-					return 'token';
-				}
-				return '';
-			}
-		);
+		Functions\when( 'get_option' )->justReturn( '' );
 
 		$this->assertFalse( VendorHub_Launch::can_launch() );
 	}
@@ -146,12 +131,13 @@ class VendorHub_Launch_Test extends PHPUnit\Framework\TestCase {
 	 * Launch is unavailable without a plugin token even when store ID exists.
 	 */
 	public function test_can_launch_false_without_plugin_token() {
-		VendorHub_Test_Connect::$connected = true;
-
 		Functions\when( 'get_option' )->alias(
 			function ( $key ) {
 				if ( 'vendorhub_store_id' === $key ) {
 					return 'wc-example.com';
+				}
+				if ( 'vendorhub_api_token' === $key ) {
+					return 'api-token';
 				}
 				if ( 'vendorhub_plugin_token' === $key ) {
 					return '';
@@ -167,12 +153,13 @@ class VendorHub_Launch_Test extends PHPUnit\Framework\TestCase {
 	 * Unauthorized users cannot launch VendorHub.
 	 */
 	public function test_can_user_launch_false_without_capability() {
-		VendorHub_Test_Connect::$connected = true;
-
 		Functions\when( 'get_option' )->alias(
 			function ( $key ) {
 				if ( 'vendorhub_store_id' === $key ) {
 					return 'wc-example.com';
+				}
+				if ( 'vendorhub_api_token' === $key ) {
+					return 'api-token';
 				}
 				if ( 'vendorhub_plugin_token' === $key ) {
 					return 'token';
@@ -189,12 +176,13 @@ class VendorHub_Launch_Test extends PHPUnit\Framework\TestCase {
 	 * Authorized connected users can launch VendorHub.
 	 */
 	public function test_can_user_launch_true_when_connected_and_authorized() {
-		VendorHub_Test_Connect::$connected = true;
-
 		Functions\when( 'get_option' )->alias(
 			function ( $key ) {
 				if ( 'vendorhub_store_id' === $key ) {
 					return 'wc-example.com';
+				}
+				if ( 'vendorhub_api_token' === $key ) {
+					return 'api-token';
 				}
 				if ( 'vendorhub_plugin_token' === $key ) {
 					return 'token';

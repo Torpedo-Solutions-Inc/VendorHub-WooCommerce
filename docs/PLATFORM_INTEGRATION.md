@@ -8,7 +8,7 @@ This document mirrors the VendorHub backend contract for the **VendorHub for Woo
 
 1. **Activation** — Store admin with `manage_woocommerce` is redirected once to **WooCommerce → Settings → VendorHub** (`vendorhub_wc_show_onboarding` option).
 2. **Permissions screen** — Native wp-admin disclosure checklist; merchant must accept before any external redirect.
-3. **Post-connect** — Success notice with **Open VendorHub dashboard** link.
+3. **Post-connect** — Success notice with **Open VendorHub** link (signed SSO launch).
 
 Plugin implementation: `VendorHub_Onboarding`, `admin/settings-page.php`.
 
@@ -56,15 +56,15 @@ Response: { storeId, apiToken }  (or access_token mapped per platform spec)
 - Plugin implementation: `VendorHub_Connect::get_oauth_authorize_url()`, `exchange_oauth_code()`, `VendorHub_Settings::handle_oauth_callback()`.
 - Legacy redirect remains fallback when OAuth client ID is not configured.
 
-### Merchant dashboard URL
+### Merchant dashboard (SSO launch)
+
+WooCommerce merchants must **not** open unsigned `/stores/{storeId}` or `/auth/login` (Shopify) URLs from the plugin. Use signed SSO launch instead:
 
 ```
-{VENDORHUB_BASE}/stores/{storeId}
+GET {VENDORHUB_BASE}/launch?store={storeId}&ts={timestamp_ms}&user={wp_user_id}&sig={hex_hmac}
 ```
 
-- Filterable path: `vendorhub_wc_dashboard_path` (default `stores/{store_id}`).
-- Fallback when no store ID: `vendorhub_wc_dashboard_fallback_path` (default `dashboard`).
-- Plugin implementation: `VendorHub_Connect::get_dashboard_url()`.
+See **SSO launch** below for signing details. Plugin: `VendorHub_Launch::build_launch_url()`, `VendorHub_Settings::handle_launch()`, `VendorHub_Connect::get_dashboard_url()` (returns launch URL when connected).
 
 ### SSO launch (return visits — plugin v2+)
 

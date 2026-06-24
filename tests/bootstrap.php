@@ -27,31 +27,20 @@ if ( ! function_exists( 'wp_json_encode' ) ) {
 	}
 }
 
-if ( ! function_exists( 'add_query_arg' ) ) {
+if ( ! function_exists( '__' ) ) {
 	/**
-	 * Minimal add_query_arg for launch URL tests.
+	 * Passthrough i18n stub.
 	 *
-	 * @param array<string,string> $args Query args.
-	 * @param string               $url  Base URL.
+	 * @param string $text Text.
 	 * @return string
 	 */
-	function add_query_arg( $args, $url ) {
-		$parsed = parse_url( $url );
-		$query  = array();
-
-		if ( ! empty( $parsed['query'] ) ) {
-			parse_str( $parsed['query'], $query );
-		}
-
-		$query = array_merge( $query, $args );
-
-		$scheme = isset( $parsed['scheme'] ) ? $parsed['scheme'] . '://' : '';
-		$host   = isset( $parsed['host'] ) ? $parsed['host'] : '';
-		$port   = isset( $parsed['port'] ) ? ':' . $parsed['port'] : '';
-		$path   = isset( $parsed['path'] ) ? $parsed['path'] : '';
-
-		return $scheme . $host . $port . $path . '?' . http_build_query( $query, '', '&', PHP_QUERY_RFC3986 );
+	function __( $text ) {
+		return $text;
 	}
+}
+
+if ( ! function_exists( 'add_query_arg' ) ) {
+	require_once __DIR__ . '/bootstrap-add-query-arg.php';
 }
 
 if ( ! function_exists( 'trailingslashit' ) ) {
@@ -80,7 +69,6 @@ if ( ! function_exists( 'apply_filters' ) ) {
 	}
 }
 
-require_once __DIR__ . '/helpers/class-vendorhub-test-connect.php';
-
 require_once dirname( __DIR__ ) . '/includes/class-vendorhub-hmac.php';
+require_once dirname( __DIR__ ) . '/includes/class-vendorhub-connect.php';
 require_once dirname( __DIR__ ) . '/includes/class-vendorhub-launch.php';

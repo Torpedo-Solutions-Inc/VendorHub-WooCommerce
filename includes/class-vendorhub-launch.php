@@ -44,12 +44,12 @@ class VendorHub_Launch {
 	 * @return string|false Launch URL or false when credentials are missing.
 	 */
 	public static function build_launch_url( $wp_user_id = null, $timestamp_ms = null ) {
-		$store_id     = get_option( 'vendorhub_store_id', '' );
-		$plugin_token = get_option( 'vendorhub_plugin_token', '' );
-
-		if ( empty( $store_id ) || empty( $plugin_token ) ) {
+		if ( ! self::can_launch() ) {
 			return false;
 		}
+
+		$store_id     = get_option( 'vendorhub_store_id', '' );
+		$plugin_token = get_option( 'vendorhub_plugin_token', '' );
 
 		if ( null === $wp_user_id ) {
 			$wp_user_id = get_current_user_id();

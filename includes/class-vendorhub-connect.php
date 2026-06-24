@@ -238,9 +238,8 @@ class VendorHub_Connect {
 
 		$api_base = VendorHub_Settings::get_api_base();
 
-		$return_url = self::settings_url();
-
-		$state = self::create_connect_state();
+		$state      = self::create_connect_state();
+		$return_url = self::connect_return_url( $state );
 
 		return add_query_arg(
 			array(
@@ -337,22 +336,20 @@ class VendorHub_Connect {
 
 
 	/**
-	 * VendorHub merchant dashboard URL for the connected store.
+	 * Signed SSO launch URL for the connected store (opens VendorHub web dashboard).
 	 *
-	 * @return string
+	 * Prefer admin-post launch flow in UI; this helper is for filters and integrations.
+	 *
+	 * @return string|false Launch URL, or false when the store cannot launch.
 	 */
 	public static function get_dashboard_url() {
-		$api_base = VendorHub_Settings::get_api_base();
-		$store_id = get_option( 'vendorhub_store_id', '' );
-		$path     = apply_filters( 'vendorhub_wc_dashboard_path', 'stores/{store_id}' );
-
-		if ( $store_id ) {
-			$path = str_replace( '{store_id}', rawurlencode( $store_id ), $path );
-		} else {
-			$path = apply_filters( 'vendorhub_wc_dashboard_fallback_path', 'dashboard' );
+		if ( ! class_exists( 'VendorHub_Launch' ) || ! VendorHub_Launch::can_launch() ) {
+			return false;
 		}
 
-		return trailingslashit( $api_base ) . ltrim( $path, '/' );
+		$url = VendorHub_Launch::build_launch_url();
+
+		return $url ? $url : false;
 	}
 
 
@@ -569,7 +566,7 @@ class VendorHub_Connect {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth return uses signed server-side redirect.
 
-		if ( ! isset( $_GET['page'], $_GET['tab'], $_GET['vendorhub_store_id'], $_GET['vendorhub_api_token'] ) ) {
+		if ( ! isset( $_GET['page'], $_GET['vendorhub_store_id'], $_GET['vendorhub_api_token'] ) ) {
 
 			return;
 
@@ -577,7 +574,7 @@ class VendorHub_Connect {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-		if ( 'wc-settings' !== $_GET['page'] || 'vendorhub' !== $_GET['tab'] ) {
+		if ( 'wc-settings' !== $_GET['page'] ) {
 
 			return;
 
@@ -858,6 +855,26 @@ class VendorHub_Connect {
 	public static function get_site_url() {
 
 		return untrailingslashit( home_url( '/' ) );
+	}
+
+
+
+	/**
+	 * Return URL sent to VendorHub for the legacy redirect connect flow.
+	 *
+	 * Always includes tab=vendorhub; state is appended when CSRF protection is used.
+	 *
+	 * @param string $state Optional connect state nonce.
+	 * @return string
+	 */
+	public static function connect_return_url( $state = '' ) {
+		$url = self::settings_url();
+
+		if ( $state ) {
+			$url = add_query_arg( 'state', $state, $url );
+		}
+
+		return $url;
 	}
 
 
