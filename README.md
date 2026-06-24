@@ -29,6 +29,22 @@ composer install
 composer run test
 ```
 
+**Windows (Composer not on PATH):** PHP is installed via winget but may not be on your shell PATH. Use the repo helper:
+
+```powershell
+.\scripts\dev-test.ps1 update   # composer update
+.\scripts\dev-test.ps1 test     # run PHPUnit
+```
+
+Or with explicit PHP + `composer.phar`:
+
+```powershell
+php composer.phar update
+php composer.phar run test
+```
+
+If `php` is not recognized, install PHP: `winget install PHP.PHP.8.3`, then open a **new** terminal.
+
 ## Build ZIP
 
 **PowerShell (Windows):**

@@ -19,6 +19,6 @@
 	"scripts": {
 		"phpcs": "phpcs --standard=phpcs.xml -s",
 		"phpcbf": "phpcbf --standard=phpcs.xml",
-		"test": "phpunit -c phpunit.xml.dist"
+		"test": "@php vendor/bin/phpunit -c phpunit.xml.dist"
 	}
 }
