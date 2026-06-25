@@ -82,11 +82,11 @@ class VendorHub_Settings_Launch_Test extends PHPUnit\Framework\TestCase {
 			parse_str( $parsed['query'], $query );
 
 			$this->assertSame( 'wc-localhost', $query['store'] );
-			$this->assertSame( '1', $query['user'] );
+			$this->assertArrayNotHasKey( 'user', $query );
 			$this->assertNotEmpty( $query['ts'] );
 			$this->assertNotEmpty( $query['sig'] );
 
-			$body         = '{"storeId":"wc-localhost","wpUserId":"1"}';
+			$body         = '{"storeId":"wc-localhost"}';
 			$expected_sig = hash_hmac( 'sha256', $query['ts'] . '.' . $body, 'test-plugin-token-secret' );
 			$this->assertSame( $expected_sig, $query['sig'] );
 		}
@@ -111,5 +111,21 @@ class VendorHub_Settings_Launch_Test extends PHPUnit\Framework\TestCase {
 			$this->assertStringContainsString( 'tab=vendorhub', $e->url );
 			$this->assertStringContainsString( 'vendorhub_status=launch_error', $e->url );
 		}
+	}
+
+	/**
+	 * normalize_api_base rejects pasted wp-admin / admin-post URLs.
+	 */
+	public function test_normalize_api_base_rejects_admin_post_url() {
+		$this->assertSame(
+			'',
+			VendorHub_Settings::normalize_api_base(
+				'http://localhost:8881/wp-admin/admin-post.php?action=vendorhub_launch&_wpnonce=abc'
+			)
+		);
+		$this->assertSame(
+			'https://www.myvendorhub.com',
+			VendorHub_Settings::normalize_api_base( 'https://www.myvendorhub.com/connect/woocommerce' )
+		);
 	}
 }

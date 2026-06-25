@@ -119,9 +119,15 @@ class VendorHub_Settings {
 
 		$api_base = isset( $_POST['vendorhub_api_base'] ) ? esc_url_raw( wp_unslash( $_POST['vendorhub_api_base'] ) ) : '';
 
+		$api_base = self::normalize_api_base( $api_base );
+
 		if ( $api_base ) {
 
-			update_option( 'vendorhub_api_base', untrailingslashit( $api_base ), false );
+			update_option( 'vendorhub_api_base', $api_base, false );
+
+		} else {
+
+			delete_option( 'vendorhub_api_base' );
 
 		}
 
@@ -305,8 +311,8 @@ class VendorHub_Settings {
 
 		check_admin_referer( 'vendorhub_launch' );
 
-		$store_id     = sanitize_text_field( (string) get_option( 'vendorhub_store_id', '' ) );
-		$plugin_token = sanitize_text_field( (string) get_option( 'vendorhub_plugin_token', '' ) );
+		$store_id     = (string) get_option( 'vendorhub_store_id', '' );
+		$plugin_token = (string) get_option( 'vendorhub_plugin_token', '' );
 		$api_base     = self::get_api_base();
 
 		if ( empty( $store_id ) || empty( $plugin_token ) ) {
@@ -314,12 +320,24 @@ class VendorHub_Settings {
 			exit;
 		}
 
-		$wp_user_id = get_current_user_id();
-		$url        = VendorHub_Launch::build_signed_launch_url(
+		/**
+		 * WordPress user ID for SSO launch body/query (`user` / `wpUserId`).
+		 * Default null omits user — required when VendorHub has no mapping for the WP user.
+		 *
+		 * @param int|null $wp_user_id Launch user ID, or null to omit.
+		 */
+		$launch_user_id = apply_filters( 'vendorhub_wc_launch_wp_user_id', null );
+		if ( null !== $launch_user_id && (int) $launch_user_id <= 0 ) {
+			$launch_user_id = null;
+		} elseif ( null !== $launch_user_id ) {
+			$launch_user_id = (int) $launch_user_id;
+		}
+
+		$url = VendorHub_Launch::build_signed_launch_url(
 			$api_base,
 			$store_id,
 			$plugin_token,
-			$wp_user_id > 0 ? (int) $wp_user_id : null,
+			$launch_user_id,
 			null
 		);
 
@@ -327,6 +345,8 @@ class VendorHub_Settings {
 			wp_safe_redirect( VendorHub_Connect::settings_url( 'launch_error' ) );
 			exit;
 		}
+
+		VendorHub_Connect::log( 'SSO launch redirect to ' . $url );
 
 		wp_safe_redirect( $url );
 		exit;
@@ -382,7 +402,7 @@ class VendorHub_Settings {
 
 			'permissions_required' => __( 'Please review and accept the permissions disclosure before connecting.', 'vendorhub-woocommerce' ),
 
-			'launch_error'         => __( 'Could not open VendorHub. Reconnect your store or see WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+			'launch_error'         => __( 'Could not open VendorHub. Disconnect, reconnect via Connect to VendorHub (not manual API paste), then try again. See WooCommerce → Status → Logs (source: vendorhub) for the launch URL.', 'vendorhub-woocommerce' ),
 
 		);
 
@@ -425,17 +445,68 @@ class VendorHub_Settings {
 
 		if ( $stored ) {
 
-			return untrailingslashit( $stored );
+			$normalized = self::normalize_api_base( $stored );
+
+			if ( $normalized ) {
+
+				return $normalized;
+
+			}
 
 		}
 
 		if ( defined( 'VENDORHUB_API_BASE' ) && VENDORHUB_API_BASE ) {
 
-			return untrailingslashit( VENDORHUB_API_BASE );
+			return self::normalize_api_base( (string) VENDORHUB_API_BASE );
 
 		}
 
 		return VENDORHUB_WC_DEFAULT_API_BASE;
+	}
+
+
+
+	/**
+	 * Normalize API base to scheme + host (+ port). Reject wp-admin / admin-post URLs.
+	 *
+	 * @param string $url Raw URL from settings or wp-config.
+	 * @return string Normalized origin, or empty when invalid.
+	 */
+	public static function normalize_api_base( $url ) {
+
+		$url = trim( (string) $url );
+
+		if ( '' === $url ) {
+
+			return '';
+
+		}
+
+		$parts = wp_parse_url( $url );
+
+		if ( ! is_array( $parts ) || empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
+
+			return '';
+
+		}
+
+		$path = isset( $parts['path'] ) ? strtolower( $parts['path'] ) : '';
+
+		if ( str_contains( $path, 'wp-admin' ) || str_contains( $path, 'admin-post.php' ) ) {
+
+			return '';
+
+		}
+
+		$base = strtolower( $parts['scheme'] ) . '://' . $parts['host'];
+
+		if ( ! empty( $parts['port'] ) ) {
+
+			$base .= ':' . $parts['port'];
+
+		}
+
+		return $base;
 	}
 
 

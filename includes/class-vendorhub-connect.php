@@ -589,6 +589,11 @@ class VendorHub_Connect {
 		$api_token = sanitize_text_field( wp_unslash( $_GET['vendorhub_api_token'] ) );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$plugin_token = isset( $_GET['vendorhub_plugin_token'] )
+			? sanitize_text_field( wp_unslash( $_GET['vendorhub_plugin_token'] ) )
+			: '';
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
 
@@ -602,7 +607,7 @@ class VendorHub_Connect {
 
 		}
 
-		self::save_credentials( $store_id, $api_token );
+		self::save_credentials( $store_id, $api_token, $plugin_token );
 
 		wp_safe_redirect( self::settings_url( 'connected' ) );
 

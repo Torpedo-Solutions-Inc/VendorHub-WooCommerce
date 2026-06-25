@@ -205,7 +205,12 @@ $can_launch           = VendorHub_Launch::can_user_launch();
 						placeholder="<?php echo esc_attr( VENDORHUB_WC_DEFAULT_API_BASE ); ?>"
 					/>
 					<p class="description">
-						<?php esc_html_e( 'Default: https://www.myvendorhub.com. Change for self-hosted VendorHub or ngrok during development.', 'vendorhub-woocommerce' ); ?>
+						<?php
+						esc_html_e(
+							'VendorHub server origin only (no paths). Default: https://www.myvendorhub.com. Do not paste the Open VendorHub or admin-post link here.',
+							'vendorhub-woocommerce'
+						);
+						?>
 					</p>
 				</td>
 			</tr>
