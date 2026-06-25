@@ -52,6 +52,53 @@ class VendorHub_Launch_Test extends PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Signature matches VendorHub contract for wc-localhost / user 1.
+	 */
+	public function test_signature_matches_wc_localhost_example() {
+		$store_id     = 'wc-localhost';
+		$plugin_token = 'test-plugin-token-secret';
+		$wp_user_id   = 1;
+		$timestamp    = '1710000000000';
+		$body         = '{"storeId":"wc-localhost","wpUserId":"1"}';
+		$expected_sig = hash_hmac( 'sha256', $timestamp . '.' . $body, $plugin_token );
+
+		$url = VendorHub_Launch::build_signed_launch_url(
+			'https://www.myvendorhub.com',
+			$store_id,
+			$plugin_token,
+			$wp_user_id,
+			$timestamp
+		);
+
+		$parsed = wp_parse_url( $url );
+		parse_str( $parsed['query'], $query );
+
+		$this->assertSame( $expected_sig, $query['sig'] );
+		$this->assertStringNotContainsString( '/auth/login', $url );
+	}
+
+	/**
+	 * Fresh timestamps are within the five-minute launch skew window.
+	 */
+	public function test_fresh_timestamp_within_skew_window() {
+		$url = VendorHub_Launch::build_signed_launch_url(
+			'https://www.myvendorhub.com',
+			'wc-example.com',
+			'test-plugin-token',
+			42,
+			null
+		);
+
+		$parsed = wp_parse_url( $url );
+		parse_str( $parsed['query'], $query );
+
+		$now_ms = (int) round( microtime( true ) * 1000 );
+		$ts_ms  = (int) $query['ts'];
+
+		$this->assertLessThanOrEqual( VendorHub_HMAC::MAX_SKEW_MS, abs( $now_ms - $ts_ms ) );
+	}
+
+	/**
 	 * Signature matches expected HMAC for fixed inputs.
 	 */
 	public function test_signature_matches_expected_hmac() {

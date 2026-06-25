@@ -305,14 +305,25 @@ class VendorHub_Settings {
 
 		check_admin_referer( 'vendorhub_launch' );
 
-		if ( ! VendorHub_Launch::can_launch() ) {
+		$store_id     = sanitize_text_field( (string) get_option( 'vendorhub_store_id', '' ) );
+		$plugin_token = sanitize_text_field( (string) get_option( 'vendorhub_plugin_token', '' ) );
+		$api_base     = self::get_api_base();
+
+		if ( empty( $store_id ) || empty( $plugin_token ) ) {
 			wp_safe_redirect( VendorHub_Connect::settings_url( 'launch_error' ) );
 			exit;
 		}
 
-		$url = VendorHub_Launch::build_launch_url();
+		$wp_user_id = get_current_user_id();
+		$url        = VendorHub_Launch::build_signed_launch_url(
+			$api_base,
+			$store_id,
+			$plugin_token,
+			$wp_user_id > 0 ? (int) $wp_user_id : null,
+			null
+		);
 
-		if ( ! $url ) {
+		if ( empty( $url ) ) {
 			wp_safe_redirect( VendorHub_Connect::settings_url( 'launch_error' ) );
 			exit;
 		}
