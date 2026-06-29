@@ -663,6 +663,8 @@ class VendorHub_Connect {
 
 		$api_token = get_option( 'vendorhub_api_token', '' );
 
+		VendorHub_Vendor_Meta::maybe_pull_integration_settings();
+
 		if ( empty( $store_id ) || empty( $api_token ) ) {
 
 			self::log( 'Connection test skipped: store is not connected.' );

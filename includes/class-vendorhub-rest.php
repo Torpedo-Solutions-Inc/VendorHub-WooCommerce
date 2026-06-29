@@ -43,6 +43,30 @@ class VendorHub_REST {
 				),
 			)
 		);
+
+		register_rest_route(
+			'vendorhub/v1',
+			'/settings',
+			array(
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => array( __CLASS__, 'handle_settings_update' ),
+					'permission_callback' => array( __CLASS__, 'verify_request' ),
+				),
+			)
+		);
+
+		register_rest_route(
+			'vendorhub/v1',
+			'/product-meta-keys',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( __CLASS__, 'handle_product_meta_keys' ),
+					'permission_callback' => array( __CLASS__, 'verify_request' ),
+				),
+			)
+		);
 	}
 
 	/**
@@ -138,5 +162,56 @@ class VendorHub_REST {
 		$allowed = array( 'pending', 'processing', 'on-hold', 'completed', 'cancelled', 'refunded', 'failed' );
 		$status  = str_replace( 'wc-', '', $status );
 		return in_array( $status, $allowed, true );
+	}
+
+	/**
+	 * Update plugin settings from VendorHub (vendor meta key).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public static function handle_settings_update( $request ) {
+		$params = $request->get_json_params();
+		if ( ! is_array( $params ) || ! isset( $params['vendorMetaKey'] ) ) {
+			return new WP_Error(
+				'vendorhub_bad_request',
+				__( 'Missing vendorMetaKey.', 'vendorhub-woocommerce' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		$key = sanitize_text_field( (string) $params['vendorMetaKey'] );
+		if ( ! VendorHub_Vendor_Meta::set_vendor_meta_key( $key ) ) {
+			return new WP_Error(
+				'vendorhub_invalid_vendor_meta_key',
+				__( 'Invalid vendorMetaKey.', 'vendorhub-woocommerce' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		VendorHub_Connect::log( 'Updated vendor meta key to ' . $key );
+
+		return new WP_REST_Response(
+			array(
+				'ok'            => true,
+				'vendorMetaKey' => $key,
+			),
+			200
+		);
+	}
+
+	/**
+	 * List distinct product meta keys for VendorHub vendor mapping UI.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response
+	 */
+	public static function handle_product_meta_keys( $request ) {
+		return new WP_REST_Response(
+			array(
+				'keys' => VendorHub_Vendor_Meta::get_product_meta_keys(),
+			),
+			200
+		);
 	}
 }

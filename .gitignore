@@ -9,3 +9,4 @@ phpcs-report.json
 phpcs-violations*.txt
 phpcs-violations*.csv
 phpcs-violations*.tsv
+.phpunit.result.cache

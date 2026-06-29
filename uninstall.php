@@ -21,6 +21,7 @@ $options = array(
 	'vendorhub_api_token',
 	'vendorhub_plugin_token',
 	'vendorhub_api_base',
+	'vendorhub_vendor_meta_key',
 );
 
 foreach ( $options as $option ) {

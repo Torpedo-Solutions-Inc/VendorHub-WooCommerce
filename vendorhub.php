@@ -28,6 +28,7 @@ define( 'VENDORHUB_WC_DEFAULT_API_BASE', 'https://www.myvendorhub.com' );
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-hmac.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-connect.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-launch.php';
+require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-vendor-meta.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-order-sync.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-rest.php';
 require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-privacy.php';
@@ -58,6 +59,7 @@ function vendorhub_wc_init() {
 	}
 
 	VendorHub_Settings::init();
+	VendorHub_Vendor_Meta::init();
 	VendorHub_Order_Sync::init();
 	VendorHub_REST::init();
 }

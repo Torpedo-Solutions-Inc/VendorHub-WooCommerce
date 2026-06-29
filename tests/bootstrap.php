@@ -72,3 +72,4 @@ if ( ! function_exists( 'apply_filters' ) ) {
 require_once dirname( __DIR__ ) . '/includes/class-vendorhub-hmac.php';
 require_once dirname( __DIR__ ) . '/includes/class-vendorhub-connect.php';
 require_once dirname( __DIR__ ) . '/includes/class-vendorhub-launch.php';
+require_once dirname( __DIR__ ) . '/includes/class-vendorhub-vendor-meta.php';

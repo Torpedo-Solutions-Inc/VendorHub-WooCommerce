@@ -85,6 +85,8 @@ class VendorHub_Order_Sync {
 			return;
 		}
 
+		VendorHub_Vendor_Meta::maybe_pull_integration_settings();
+
 		$payload = self::normalize_order( $order );
 		$body    = wp_json_encode( $payload );
 
@@ -121,7 +123,13 @@ class VendorHub_Order_Sync {
 			$order->update_meta_data( self::SYNCED_META_KEY, 'yes' );
 			$order->delete_meta_data( self::SYNCING_META_KEY );
 			$order->save();
-			self::log( 'Order ' . $order->get_id() . ' forwarded to VendorHub' );
+
+			$log_msg = 'Order ' . $order->get_id() . ' forwarded to VendorHub';
+			$data    = json_decode( $raw, true );
+			if ( is_array( $data ) && array_key_exists( 'vendorResponsesCreated', $data ) ) {
+				$log_msg .= ' (vendorResponsesCreated: ' . (int) $data['vendorResponsesCreated'] . ')';
+			}
+			self::log( $log_msg );
 			return;
 		}
 
@@ -219,21 +227,17 @@ class VendorHub_Order_Sync {
 	 * @return string|null
 	 */
 	private static function resolve_line_item_vendor( $item, $product ) {
-		$vendor_keys = array( '_vendor', 'vendor', '_wcv_vendor', '_dokan_vendor_id' );
+		$key = VendorHub_Vendor_Meta::get_vendor_meta_key();
 
-		foreach ( $vendor_keys as $key ) {
-			$value = $item->get_meta( $key, true );
-			if ( ! empty( $value ) ) {
-				return is_numeric( $value ) ? self::resolve_vendor_display_name( (int) $value ) : (string) $value;
-			}
+		$value = $item->get_meta( $key, true );
+		if ( ! empty( $value ) ) {
+			return is_numeric( $value ) ? self::resolve_vendor_display_name( (int) $value ) : (string) $value;
 		}
 
 		if ( $product ) {
-			foreach ( $vendor_keys as $key ) {
-				$value = $product->get_meta( $key, true );
-				if ( ! empty( $value ) ) {
-					return is_numeric( $value ) ? self::resolve_vendor_display_name( (int) $value ) : (string) $value;
-				}
+			$value = get_post_meta( $product->get_id(), $key, true );
+			if ( ! empty( $value ) ) {
+				return is_numeric( $value ) ? self::resolve_vendor_display_name( (int) $value ) : (string) $value;
 			}
 		}
 
