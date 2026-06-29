@@ -197,6 +197,112 @@ class VendorHub_Vendor_Meta {
 	}
 
 	/**
+	 * Distinct non-empty vendor values for a product meta key.
+	 *
+	 * @param string|null $meta_key Meta key; defaults to configured vendor meta key.
+	 * @return string[]
+	 */
+	public static function get_product_vendor_values( $meta_key = null ) {
+		global $wpdb;
+
+		$key = null === $meta_key ? self::get_vendor_meta_key() : sanitize_text_field( (string) $meta_key );
+		if ( ! self::validate_vendor_meta_key( $key ) ) {
+			return array();
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$values = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT DISTINCT pm.meta_value
+				FROM {$wpdb->postmeta} pm
+				INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+				WHERE p.post_type IN (%s, %s)
+				AND pm.meta_key = %s
+				AND pm.meta_value IS NOT NULL
+				AND pm.meta_value != ''
+				ORDER BY pm.meta_value ASC",
+				'product',
+				'product_variation',
+				$key
+			)
+		);
+
+		if ( ! is_array( $values ) ) {
+			return array();
+		}
+
+		$vendors = array();
+		foreach ( $values as $value ) {
+			$formatted = self::format_vendor_value( $value );
+			if ( '' !== $formatted ) {
+				$vendors[] = $formatted;
+			}
+		}
+
+		return array_values( array_unique( $vendors ) );
+	}
+
+	/**
+	 * Resolve vendor name from product or variation post meta.
+	 *
+	 * @param int         $product_id   Product ID.
+	 * @param int         $variation_id Variation ID.
+	 * @param string|null $meta_key     Meta key; defaults to configured vendor meta key.
+	 * @return string|null
+	 */
+	public static function resolve_product_vendor( $product_id, $variation_id = 0, $meta_key = null ) {
+		$key = null === $meta_key ? self::get_vendor_meta_key() : sanitize_text_field( (string) $meta_key );
+
+		if ( $variation_id ) {
+			$value = get_post_meta( (int) $variation_id, $key, true );
+			if ( ! empty( $value ) ) {
+				return self::format_vendor_value( $value );
+			}
+		}
+
+		if ( $product_id ) {
+			$value = get_post_meta( (int) $product_id, $key, true );
+			if ( ! empty( $value ) ) {
+				return self::format_vendor_value( $value );
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Normalize a raw vendor meta value to a display string.
+	 *
+	 * @param mixed $value Meta value.
+	 * @return string
+	 */
+	public static function format_vendor_value( $value ) {
+		if ( is_array( $value ) ) {
+			$value = reset( $value );
+		}
+
+		if ( is_scalar( $value ) && is_numeric( $value ) ) {
+			return self::resolve_vendor_display_name( (int) $value );
+		}
+
+		return is_scalar( $value ) ? trim( (string) $value ) : '';
+	}
+
+	/**
+	 * Resolve vendor user ID to display name when possible.
+	 *
+	 * @param int $user_id WordPress user ID.
+	 * @return string
+	 */
+	public static function resolve_vendor_display_name( $user_id ) {
+		$user = get_userdata( $user_id );
+		if ( $user ) {
+			return $user->display_name ? $user->display_name : $user->user_login;
+		}
+		return (string) $user_id;
+	}
+
+	/**
 	 * Whether a meta key is a WooCommerce internal product field.
 	 *
 	 * @param string $key Meta key.

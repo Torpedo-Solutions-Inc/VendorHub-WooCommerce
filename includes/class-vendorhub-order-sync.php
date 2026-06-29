@@ -12,8 +12,12 @@ defined( 'ABSPATH' ) || exit;
  */
 class VendorHub_Order_Sync {
 
-	const SYNCED_META_KEY  = '_vendorhub_synced';
-	const SYNCING_META_KEY = '_vendorhub_syncing';
+	const SYNCED_META_KEY     = '_vendorhub_synced';
+	const SYNCING_META_KEY    = '_vendorhub_syncing';
+	const RESPONSES_META_KEY  = '_vendorhub_vendor_responses_created';
+
+	/** @var string[] Order statuses that trigger forward when changed. */
+	const FORWARDABLE_STATUSES = array( 'processing', 'completed' );
 
 	/**
 	 * Register WooCommerce hooks.
@@ -24,6 +28,7 @@ class VendorHub_Order_Sync {
 		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'on_order_ready' ), 20, 1 );
 		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'on_order_ready' ), 20, 2 );
 		add_action( 'woocommerce_store_api_checkout_order_processed', array( __CLASS__, 'on_order_ready' ), 20, 1 );
+		add_action( 'woocommerce_order_status_changed', array( __CLASS__, 'on_order_status_changed' ), 20, 4 );
 	}
 
 	/**
@@ -43,11 +48,47 @@ class VendorHub_Order_Sync {
 			return;
 		}
 
-		if ( 'yes' === $order->get_meta( self::SYNCED_META_KEY ) ) {
+		if ( self::is_order_fully_synced( $order ) ) {
 			return;
 		}
 
 		self::forward_order( $order );
+	}
+
+	/**
+	 * Forward when an order reaches a routable status (admin status changes).
+	 *
+	 * @param int      $order_id Order ID.
+	 * @param string   $from     Previous status.
+	 * @param string   $to       New status.
+	 * @param WC_Order $order    Order object.
+	 */
+	public static function on_order_status_changed( $order_id, $from, $to, $order ) {
+		unset( $from );
+
+		if ( ! in_array( $to, self::FORWARDABLE_STATUSES, true ) ) {
+			return;
+		}
+
+		self::on_order_ready( $order_id, $order );
+	}
+
+	/**
+	 * Whether the order was accepted by VendorHub with vendor responses.
+	 *
+	 * @param WC_Order $order WooCommerce order.
+	 * @return bool
+	 */
+	private static function is_order_fully_synced( $order ) {
+		if ( 'yes' !== $order->get_meta( self::SYNCED_META_KEY ) ) {
+			return false;
+		}
+
+		if ( ! $order->meta_exists( self::RESPONSES_META_KEY ) ) {
+			return true;
+		}
+
+		return (int) $order->get_meta( self::RESPONSES_META_KEY ) > 0;
 	}
 
 	/**
@@ -60,7 +101,7 @@ class VendorHub_Order_Sync {
 			return;
 		}
 
-		if ( 'yes' === $order->get_meta( self::SYNCED_META_KEY ) ) {
+		if ( self::is_order_fully_synced( $order ) ) {
 			return;
 		}
 
@@ -94,6 +135,12 @@ class VendorHub_Order_Sync {
 			return;
 		}
 
+		if ( ! self::payload_has_vendors( $payload ) ) {
+			self::log(
+				'Order ' . $order->get_id() . ' has no vendor on line items (meta key: ' . VendorHub_Vendor_Meta::get_vendor_meta_key() . ')'
+			);
+		}
+
 		$url = trailingslashit( $api_base ) . 'api/stores/' . rawurlencode( $store_id ) . '/orders';
 
 		$response = wp_safe_remote_post(
@@ -118,14 +165,28 @@ class VendorHub_Order_Sync {
 		$raw  = wp_remote_retrieve_body( $response );
 
 		if ( $code >= 200 && $code < 300 ) {
-			$order->update_meta_data( self::SYNCED_META_KEY, 'yes' );
+			$data               = json_decode( $raw, true );
+			$responses_created  = is_array( $data ) && array_key_exists( 'vendorResponsesCreated', $data )
+				? (int) $data['vendorResponsesCreated']
+				: 0;
+			$mark_synced        = self::should_mark_synced( $payload, $responses_created );
+
+			if ( $mark_synced ) {
+				$order->update_meta_data( self::SYNCED_META_KEY, 'yes' );
+			} else {
+				$order->delete_meta_data( self::SYNCED_META_KEY );
+			}
+
+			$order->update_meta_data( self::RESPONSES_META_KEY, $responses_created );
 			$order->delete_meta_data( self::SYNCING_META_KEY );
 			$order->save();
 
 			$log_msg = 'Order ' . $order->get_id() . ' forwarded to VendorHub';
-			$data    = json_decode( $raw, true );
 			if ( is_array( $data ) && array_key_exists( 'vendorResponsesCreated', $data ) ) {
-				$log_msg .= ' (vendorResponsesCreated: ' . (int) $data['vendorResponsesCreated'] . ')';
+				$log_msg .= ' (vendorResponsesCreated: ' . $responses_created . ')';
+			}
+			if ( ! $mark_synced ) {
+				$log_msg .= ' — will retry after vendors are registered in VendorHub';
 			}
 			self::log( $log_msg );
 			return;
@@ -229,58 +290,56 @@ class VendorHub_Order_Sync {
 
 		$value = $item->get_meta( $key, true );
 		if ( ! empty( $value ) ) {
-			return self::format_vendor_value( $value );
+			return VendorHub_Vendor_Meta::format_vendor_value( $value );
 		}
 
 		if ( $product instanceof WC_Product ) {
 			$value = $product->get_meta( $key, true );
 			if ( ! empty( $value ) ) {
-				return self::format_vendor_value( $value );
+				return VendorHub_Vendor_Meta::format_vendor_value( $value );
 			}
 		}
 
-		$product_id   = (int) $item->get_product_id();
-		$variation_id = (int) $item->get_variation_id();
-
-		if ( $variation_id ) {
-			$value = get_post_meta( $variation_id, $key, true );
-			if ( ! empty( $value ) ) {
-				return self::format_vendor_value( $value );
-			}
-		}
-
-		if ( $product_id ) {
-			$value = get_post_meta( $product_id, $key, true );
-			if ( ! empty( $value ) ) {
-				return self::format_vendor_value( $value );
-			}
-		}
-
-		return null;
+		return VendorHub_Vendor_Meta::resolve_product_vendor(
+			(int) $item->get_product_id(),
+			(int) $item->get_variation_id(),
+			$key
+		);
 	}
 
 	/**
-	 * Normalize a raw vendor meta value to a display string.
+	 * Whether any line item in the normalized payload has a vendor.
 	 *
-	 * @param mixed $value Meta value.
-	 * @return string
+	 * @param array $payload Normalized order payload.
+	 * @return bool
 	 */
-	private static function format_vendor_value( $value ) {
-		return is_numeric( $value ) ? self::resolve_vendor_display_name( (int) $value ) : (string) $value;
+	private static function payload_has_vendors( $payload ) {
+		if ( empty( $payload['lineItems'] ) || ! is_array( $payload['lineItems'] ) ) {
+			return false;
+		}
+
+		foreach ( $payload['lineItems'] as $line_item ) {
+			if ( ! empty( $line_item['vendor'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
-	 * Resolve vendor user ID to display name when possible.
+	 * Whether to mark an order as fully synced after ingest.
 	 *
-	 * @param int $user_id WordPress user ID.
-	 * @return string
+	 * @param array $payload            Normalized order payload.
+	 * @param int   $responses_created  VendorHub vendorResponsesCreated count.
+	 * @return bool
 	 */
-	private static function resolve_vendor_display_name( $user_id ) {
-		$user = get_userdata( $user_id );
-		if ( $user ) {
-			return $user->display_name ? $user->display_name : $user->user_login;
+	private static function should_mark_synced( $payload, $responses_created ) {
+		if ( ! self::payload_has_vendors( $payload ) ) {
+			return true;
 		}
-		return (string) $user_id;
+
+		return $responses_created > 0;
 	}
 
 	/**

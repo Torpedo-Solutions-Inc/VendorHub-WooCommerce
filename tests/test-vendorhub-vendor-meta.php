@@ -43,4 +43,13 @@ class VendorHub_Vendor_Meta_Test extends PHPUnit\Framework\TestCase {
 		$this->assertFalse( VendorHub_Vendor_Meta::is_internal_product_meta_key( '_vendor' ) );
 		$this->assertFalse( VendorHub_Vendor_Meta::is_internal_product_meta_key( 'vendor' ) );
 	}
+
+	/**
+	 * Formats scalar and numeric vendor meta values.
+	 */
+	public function test_format_vendor_value() {
+		$this->assertSame( 'Acme Vendor', VendorHub_Vendor_Meta::format_vendor_value( 'Acme Vendor' ) );
+		$this->assertSame( 'vendor a', VendorHub_Vendor_Meta::format_vendor_value( ' vendor a ' ) );
+		$this->assertSame( '', VendorHub_Vendor_Meta::format_vendor_value( array() ) );
+	}
 }

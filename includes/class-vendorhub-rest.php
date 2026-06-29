@@ -67,6 +67,24 @@ class VendorHub_REST {
 				),
 			)
 		);
+
+		register_rest_route(
+			'vendorhub/v1',
+			'/product-vendors',
+			array(
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'callback'            => array( __CLASS__, 'handle_product_vendors' ),
+					'permission_callback' => array( __CLASS__, 'verify_request' ),
+					'args'                => array(
+						'metaKey' => array(
+							'required'          => false,
+							'sanitize_callback' => 'sanitize_text_field',
+						),
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -210,6 +228,35 @@ class VendorHub_REST {
 		return new WP_REST_Response(
 			array(
 				'keys' => VendorHub_Vendor_Meta::get_product_meta_keys(),
+			),
+			200
+		);
+	}
+
+	/**
+	 * List distinct vendor values for a product meta key (VendorHub vendor sync).
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public static function handle_product_vendors( $request ) {
+		$meta_key = $request->get_param( 'metaKey' );
+		if ( null === $meta_key || '' === $meta_key ) {
+			$meta_key = VendorHub_Vendor_Meta::get_vendor_meta_key();
+		}
+
+		if ( ! VendorHub_Vendor_Meta::validate_vendor_meta_key( $meta_key ) ) {
+			return new WP_Error(
+				'vendorhub_invalid_vendor_meta_key',
+				__( 'Invalid metaKey.', 'vendorhub-woocommerce' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		return new WP_REST_Response(
+			array(
+				'metaKey' => $meta_key,
+				'vendors' => VendorHub_Vendor_Meta::get_product_vendor_values( $meta_key ),
 			),
 			200
 		);

@@ -177,6 +177,21 @@ Body (optional fields): `status`, `note`, `tracking`.
 
 Plugin implementation: `VendorHub_REST`.
 
+Vendor meta discovery (Bearer + HMAC, same headers as order callback):
+
+```
+GET {siteUrl}/wp-json/vendorhub/v1/product-meta-keys
+GET {siteUrl}/wp-json/vendorhub/v1/product-vendors?metaKey={vendorMetaKey}
+```
+
+Responses: `{ "keys": [...] }` and `{ "metaKey": "...", "vendors": [...] }`.
+
+```
+POST {siteUrl}/wp-json/vendorhub/v1/settings
+```
+
+Body: `{ "vendorMetaKey": "vendor" }`.
+
 ## 4. Settings UI
 
 **WooCommerce → Settings → VendorHub**
