@@ -52,4 +52,28 @@ class VendorHub_Vendor_Meta_Test extends PHPUnit\Framework\TestCase {
 		$this->assertSame( 'vendor a', VendorHub_Vendor_Meta::format_vendor_value( ' vendor a ' ) );
 		$this->assertSame( '', VendorHub_Vendor_Meta::format_vendor_value( array() ) );
 	}
+
+	/**
+	 * Splits comma- and pipe-separated attribute values.
+	 */
+	public function test_split_attribute_values() {
+		$this->assertSame(
+			array( 'Vendor A', 'Vendor B' ),
+			VendorHub_Vendor_Meta::split_attribute_values( 'Vendor A, Vendor B' )
+		);
+		$this->assertSame(
+			array( 'Vendor A', 'Vendor B' ),
+			VendorHub_Vendor_Meta::split_attribute_values( 'Vendor A | Vendor B' )
+		);
+	}
+
+	/**
+	 * Builds taxonomy attribute lookup keys from a configured field name.
+	 */
+	public function test_get_attribute_lookup_keys_without_wc_taxonomy_helper() {
+		$this->assertSame(
+			array( 'vendor' ),
+			VendorHub_Vendor_Meta::get_attribute_lookup_keys( 'vendor' )
+		);
+	}
 }

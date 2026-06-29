@@ -253,10 +253,16 @@ class VendorHub_REST {
 			);
 		}
 
+		$vendors = VendorHub_Vendor_Meta::get_product_vendor_values( $meta_key );
+
+		VendorHub_Connect::log(
+			'Product-vendors sync: metaKey=' . $meta_key . ', count=' . count( $vendors )
+		);
+
 		return new WP_REST_Response(
 			array(
 				'metaKey' => $meta_key,
-				'vendors' => VendorHub_Vendor_Meta::get_product_vendor_values( $meta_key ),
+				'vendors' => $vendors,
 			),
 			200
 		);

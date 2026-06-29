@@ -203,12 +203,39 @@ class VendorHub_Vendor_Meta {
 	 * @return string[]
 	 */
 	public static function get_product_vendor_values( $meta_key = null ) {
-		global $wpdb;
-
 		$key = null === $meta_key ? self::get_vendor_meta_key() : sanitize_text_field( (string) $meta_key );
 		if ( ! self::validate_vendor_meta_key( $key ) ) {
 			return array();
 		}
+
+		$vendors = self::merge_vendor_values(
+			self::get_vendor_values_from_postmeta( $key ),
+			self::get_vendor_values_from_product_attributes( $key )
+		);
+
+		if ( ! empty( $vendors ) ) {
+			return $vendors;
+		}
+
+		foreach ( self::get_fallback_vendor_meta_keys( $key ) as $fallback_key ) {
+			$vendors = self::merge_vendor_values(
+				$vendors,
+				self::get_vendor_values_from_postmeta( $fallback_key ),
+				self::get_vendor_values_from_product_attributes( $fallback_key )
+			);
+		}
+
+		return $vendors;
+	}
+
+	/**
+	 * Distinct vendor values stored as product post meta.
+	 *
+	 * @param string $meta_key Meta key.
+	 * @return string[]
+	 */
+	private static function get_vendor_values_from_postmeta( $meta_key ) {
+		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 		$values = $wpdb->get_col(
@@ -223,7 +250,7 @@ class VendorHub_Vendor_Meta {
 				ORDER BY pm.meta_value ASC",
 				'product',
 				'product_variation',
-				$key
+				$meta_key
 			)
 		);
 
@@ -239,7 +266,177 @@ class VendorHub_Vendor_Meta {
 			}
 		}
 
-		return array_values( array_unique( $vendors ) );
+		return $vendors;
+	}
+
+	/**
+	 * Distinct vendor values from WooCommerce product attributes (custom or taxonomy).
+	 *
+	 * @param string $meta_key Configured vendor field name.
+	 * @return string[]
+	 */
+	private static function get_vendor_values_from_product_attributes( $meta_key ) {
+		if ( ! function_exists( 'wc_get_products' ) || ! function_exists( 'wc_get_product' ) ) {
+			return array();
+		}
+
+		$lookup_keys = self::get_attribute_lookup_keys( $meta_key );
+		$vendors     = array();
+
+		$product_ids = wc_get_products(
+			array(
+				'limit'  => -1,
+				'return' => 'ids',
+				'status' => array( 'publish', 'private', 'draft' ),
+			)
+		);
+
+		if ( ! is_array( $product_ids ) ) {
+			return array();
+		}
+
+		foreach ( $product_ids as $product_id ) {
+			$product = wc_get_product( $product_id );
+			if ( ! $product ) {
+				continue;
+			}
+
+			$vendors = self::merge_vendor_values(
+				$vendors,
+				self::collect_attribute_vendor_values( $product, $lookup_keys )
+			);
+
+			if ( $product->is_type( 'variable' ) ) {
+				foreach ( $product->get_children() as $child_id ) {
+					$variation = wc_get_product( $child_id );
+					if ( ! $variation ) {
+						continue;
+					}
+
+					$vendors = self::merge_vendor_values(
+						$vendors,
+						self::collect_attribute_vendor_values( $variation, $lookup_keys )
+					);
+				}
+			}
+		}
+
+		return $vendors;
+	}
+
+	/**
+	 * Collect formatted vendor values from a product's attributes.
+	 *
+	 * @param WC_Product $product     Product or variation.
+	 * @param string[]   $lookup_keys Attribute slugs to inspect.
+	 * @return string[]
+	 */
+	private static function collect_attribute_vendor_values( $product, $lookup_keys ) {
+		$vendors = array();
+
+		foreach ( $lookup_keys as $attr_key ) {
+			$value = $product->get_attribute( $attr_key );
+			if ( '' === $value ) {
+				continue;
+			}
+
+			foreach ( self::split_attribute_values( $value ) as $part ) {
+				$formatted = self::format_vendor_value( $part );
+				if ( '' !== $formatted ) {
+					$vendors[] = $formatted;
+				}
+			}
+		}
+
+		return $vendors;
+	}
+
+	/**
+	 * Attribute slugs to inspect for a configured vendor field name.
+	 *
+	 * @param string $meta_key Configured vendor field name.
+	 * @return string[]
+	 */
+	public static function get_attribute_lookup_keys( $meta_key ) {
+		$keys = array( (string) $meta_key );
+
+		if ( function_exists( 'wc_sanitize_taxonomy_name' ) && 0 !== strpos( $meta_key, 'pa_' ) ) {
+			$taxonomy = wc_sanitize_taxonomy_name( $meta_key );
+			if ( $taxonomy && $taxonomy !== $meta_key ) {
+				$keys[] = $taxonomy;
+				$keys[] = 'pa_' . $taxonomy;
+			}
+		}
+
+		return array_values( array_unique( $keys ) );
+	}
+
+	/**
+	 * Split a WooCommerce attribute value into individual vendor names.
+	 *
+	 * @param string $value Raw attribute value.
+	 * @return string[]
+	 */
+	public static function split_attribute_values( $value ) {
+		$parts = preg_split( '/\s*[,|]\s*/', (string) $value );
+		if ( ! is_array( $parts ) ) {
+			return array();
+		}
+
+		$values = array();
+		foreach ( $parts as $part ) {
+			$part = trim( (string) $part );
+			if ( '' !== $part ) {
+				$values[] = $part;
+			}
+		}
+
+		return $values;
+	}
+
+	/**
+	 * Alternate meta keys to try when the configured key returns no vendors.
+	 *
+	 * @param string $meta_key Configured vendor meta key.
+	 * @return string[]
+	 */
+	private static function get_fallback_vendor_meta_keys( $meta_key ) {
+		$fallbacks = array();
+		if ( '_vendor' !== $meta_key ) {
+			$fallbacks[] = '_vendor';
+		}
+		if ( 'vendor' !== $meta_key ) {
+			$fallbacks[] = 'vendor';
+		}
+
+		return $fallbacks;
+	}
+
+	/**
+	 * Merge, dedupe, and sort vendor name lists.
+	 *
+	 * @param string[] ...$lists Vendor lists.
+	 * @return string[]
+	 */
+	private static function merge_vendor_values( ...$lists ) {
+		$merged = array();
+
+		foreach ( $lists as $list ) {
+			if ( ! is_array( $list ) ) {
+				continue;
+			}
+
+			foreach ( $list as $vendor ) {
+				if ( is_string( $vendor ) && '' !== $vendor ) {
+					$merged[] = $vendor;
+				}
+			}
+		}
+
+		$merged = array_values( array_unique( $merged ) );
+		sort( $merged, SORT_NATURAL | SORT_FLAG_CASE );
+
+		return $merged;
 	}
 
 	/**
@@ -253,17 +450,59 @@ class VendorHub_Vendor_Meta {
 	public static function resolve_product_vendor( $product_id, $variation_id = 0, $meta_key = null ) {
 		$key = null === $meta_key ? self::get_vendor_meta_key() : sanitize_text_field( (string) $meta_key );
 
+		$ids_to_check = array();
 		if ( $variation_id ) {
-			$value = get_post_meta( (int) $variation_id, $key, true );
+			$ids_to_check[] = (int) $variation_id;
+		}
+		if ( $product_id ) {
+			$ids_to_check[] = (int) $product_id;
+		}
+
+		foreach ( $ids_to_check as $id ) {
+			$value = get_post_meta( $id, $key, true );
 			if ( ! empty( $value ) ) {
 				return self::format_vendor_value( $value );
 			}
 		}
 
-		if ( $product_id ) {
-			$value = get_post_meta( (int) $product_id, $key, true );
-			if ( ! empty( $value ) ) {
-				return self::format_vendor_value( $value );
+		if ( function_exists( 'wc_get_product' ) ) {
+			$lookup_keys = self::get_attribute_lookup_keys( $key );
+
+			foreach ( $ids_to_check as $id ) {
+				$product = wc_get_product( $id );
+				if ( ! $product ) {
+					continue;
+				}
+
+				$values = self::collect_attribute_vendor_values( $product, $lookup_keys );
+				if ( ! empty( $values ) ) {
+					return $values[0];
+				}
+			}
+		}
+
+		foreach ( self::get_fallback_vendor_meta_keys( $key ) as $fallback_key ) {
+			foreach ( $ids_to_check as $id ) {
+				$value = get_post_meta( $id, $fallback_key, true );
+				if ( ! empty( $value ) ) {
+					return self::format_vendor_value( $value );
+				}
+			}
+
+			if ( function_exists( 'wc_get_product' ) ) {
+				$lookup_keys = self::get_attribute_lookup_keys( $fallback_key );
+
+				foreach ( $ids_to_check as $id ) {
+					$product = wc_get_product( $id );
+					if ( ! $product ) {
+						continue;
+					}
+
+					$values = self::collect_attribute_vendor_values( $product, $lookup_keys );
+					if ( ! empty( $values ) ) {
+						return $values[0];
+					}
+				}
 			}
 		}
 

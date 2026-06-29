@@ -228,6 +228,44 @@ $can_launch           = VendorHub_Launch::can_user_launch();
 					<p class="description"><?php esc_html_e( 'VendorHub pushes order updates to this REST route.', 'vendorhub-woocommerce' ); ?></p>
 				</td>
 			</tr>
+			<?php if ( $is_connected ) : ?>
+				<?php
+				$vendor_meta_key   = VendorHub_Vendor_Meta::get_vendor_meta_key();
+				$discovered_vendors = VendorHub_Vendor_Meta::get_product_vendor_values();
+				?>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Vendor meta key', 'vendorhub-woocommerce' ); ?></th>
+					<td>
+						<code><?php echo esc_html( $vendor_meta_key ); ?></code>
+						<p class="description"><?php esc_html_e( 'Must match your product vendor field name in WooCommerce.', 'vendorhub-woocommerce' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Discovered vendors', 'vendorhub-woocommerce' ); ?></th>
+					<td>
+						<?php
+						echo esc_html(
+							sprintf(
+								/* translators: %d: number of vendors found on products */
+								_n( '%d vendor on products', '%d vendors on products', count( $discovered_vendors ), 'vendorhub-woocommerce' ),
+								count( $discovered_vendors )
+							)
+						);
+						if ( ! empty( $discovered_vendors ) ) {
+							echo '<br /><code>' . esc_html( implode( ', ', $discovered_vendors ) ) . '</code>';
+						}
+						?>
+						<p class="description"><?php esc_html_e( 'Local preview of what Sync Now should import into VendorHub.', 'vendorhub-woocommerce' ); ?></p>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Vendor sync endpoint', 'vendorhub-woocommerce' ); ?></th>
+					<td>
+						<code><?php echo esc_html( rest_url( 'vendorhub/v1/product-vendors' ) ); ?></code>
+						<p class="description"><?php esc_html_e( 'VendorHub must reach this URL from the internet. Localhost stores need ngrok or a public tunnel.', 'vendorhub-woocommerce' ); ?></p>
+					</td>
+				</tr>
+			<?php endif; ?>
 		</tbody>
 	</table>
 
