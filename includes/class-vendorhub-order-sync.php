@@ -19,33 +19,27 @@ class VendorHub_Order_Sync {
 	 * Register WooCommerce hooks.
 	 */
 	public static function init() {
-		add_action( 'woocommerce_new_order', array( __CLASS__, 'on_new_order' ), 10, 2 );
-		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'on_checkout_processed' ), 20, 1 );
+		// woocommerce_new_order fires before line items are persisted — do not sync there.
+		add_action( 'woocommerce_checkout_order_created', array( __CLASS__, 'on_order_ready' ), 20, 1 );
+		add_action( 'woocommerce_checkout_order_processed', array( __CLASS__, 'on_order_ready' ), 20, 1 );
+		add_action( 'woocommerce_process_shop_order_meta', array( __CLASS__, 'on_order_ready' ), 20, 2 );
+		add_action( 'woocommerce_store_api_checkout_order_processed', array( __CLASS__, 'on_order_ready' ), 20, 1 );
 	}
 
 	/**
-	 * Handle woocommerce_new_order.
+	 * Forward order once line items and product meta are available.
 	 *
-	 * @param int       $order_id Order ID.
-	 * @param WC_Order  $order    Order object.
+	 * @param int|WC_Order $order_id Order ID or order object.
+	 * @param WC_Order     $order    Order object (admin save hook).
 	 */
-	public static function on_new_order( $order_id, $order = null ) {
-		if ( ! $order instanceof WC_Order ) {
+	public static function on_order_ready( $order_id, $order = null ) {
+		if ( $order_id instanceof WC_Order ) {
+			$order = $order_id;
+		} elseif ( ! $order instanceof WC_Order ) {
 			$order = wc_get_order( $order_id );
 		}
-		if ( $order ) {
-			self::forward_order( $order );
-		}
-	}
 
-	/**
-	 * Fallback hook after checkout processing.
-	 *
-	 * @param int $order_id Order ID.
-	 */
-	public static function on_checkout_processed( $order_id ) {
-		$order = wc_get_order( $order_id );
-		if ( ! $order ) {
+		if ( ! $order instanceof WC_Order ) {
 			return;
 		}
 
@@ -74,8 +68,9 @@ class VendorHub_Order_Sync {
 			return;
 		}
 
-		$order->update_meta_data( self::SYNCING_META_KEY, 'yes' );
-		$order->save();
+		if ( 0 === count( $order->get_items( 'line_item' ) ) ) {
+			return;
+		}
 
 		$store_id  = get_option( 'vendorhub_store_id', '' );
 		$api_token = get_option( 'vendorhub_api_token', '' );
@@ -84,6 +79,9 @@ class VendorHub_Order_Sync {
 		if ( empty( $store_id ) || empty( $api_token ) ) {
 			return;
 		}
+
+		$order->update_meta_data( self::SYNCING_META_KEY, 'yes' );
+		$order->save();
 
 		VendorHub_Vendor_Meta::maybe_pull_integration_settings();
 
@@ -231,17 +229,44 @@ class VendorHub_Order_Sync {
 
 		$value = $item->get_meta( $key, true );
 		if ( ! empty( $value ) ) {
-			return is_numeric( $value ) ? self::resolve_vendor_display_name( (int) $value ) : (string) $value;
+			return self::format_vendor_value( $value );
 		}
 
-		if ( $product ) {
-			$value = get_post_meta( $product->get_id(), $key, true );
+		if ( $product instanceof WC_Product ) {
+			$value = $product->get_meta( $key, true );
 			if ( ! empty( $value ) ) {
-				return is_numeric( $value ) ? self::resolve_vendor_display_name( (int) $value ) : (string) $value;
+				return self::format_vendor_value( $value );
+			}
+		}
+
+		$product_id   = (int) $item->get_product_id();
+		$variation_id = (int) $item->get_variation_id();
+
+		if ( $variation_id ) {
+			$value = get_post_meta( $variation_id, $key, true );
+			if ( ! empty( $value ) ) {
+				return self::format_vendor_value( $value );
+			}
+		}
+
+		if ( $product_id ) {
+			$value = get_post_meta( $product_id, $key, true );
+			if ( ! empty( $value ) ) {
+				return self::format_vendor_value( $value );
 			}
 		}
 
 		return null;
+	}
+
+	/**
+	 * Normalize a raw vendor meta value to a display string.
+	 *
+	 * @param mixed $value Meta value.
+	 * @return string
+	 */
+	private static function format_vendor_value( $value ) {
+		return is_numeric( $value ) ? self::resolve_vendor_display_name( (int) $value ) : (string) $value;
 	}
 
 	/**

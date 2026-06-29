@@ -135,7 +135,7 @@ Body JSON (signature field appended after signing):
 
 ## 2. Order forwarding
 
-- Hooks: `woocommerce_new_order`, `woocommerce_checkout_order_processed` (fallback).
+- Hooks: `woocommerce_checkout_order_created`, `woocommerce_checkout_order_processed`, `woocommerce_process_shop_order_meta` (admin orders), `woocommerce_store_api_checkout_order_processed` (block checkout). Does not use `woocommerce_new_order` (line items are not persisted yet).
 - Endpoint:
 
 ```

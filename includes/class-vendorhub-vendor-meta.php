@@ -12,8 +12,10 @@ defined( 'ABSPATH' ) || exit;
  */
 class VendorHub_Vendor_Meta {
 
-	const OPTION_KEY  = 'vendorhub_vendor_meta_key';
-	const DEFAULT_KEY = '_vendor';
+	const OPTION_KEY              = 'vendorhub_vendor_meta_key';
+	const DEFAULT_KEY             = '_vendor';
+	const SETTINGS_SYNC_TRANSIENT = 'vendorhub_integration_settings_synced';
+	const SETTINGS_SYNC_TTL       = 300;
 
 	/**
 	 * Register admin hooks for integration-settings pull.
@@ -48,15 +50,6 @@ class VendorHub_Vendor_Meta {
 	}
 
 	/**
-	 * Whether vendor meta key is stored locally (not relying on default).
-	 *
-	 * @return bool
-	 */
-	public static function has_stored_key() {
-		return '' !== get_option( self::OPTION_KEY, '' );
-	}
-
-	/**
 	 * Validate a vendor meta key slug.
 	 *
 	 * @param string $key Meta key.
@@ -88,18 +81,22 @@ class VendorHub_Vendor_Meta {
 	}
 
 	/**
-	 * Fetch integration settings from VendorHub when local key is not configured.
+	 * Fetch integration settings from VendorHub (throttled unless forced).
+	 *
+	 * @param bool $force Skip throttle (e.g. Test connection).
 	 */
-	public static function maybe_pull_integration_settings() {
-		if ( self::has_stored_key() ) {
-			return;
-		}
-
+	public static function maybe_pull_integration_settings( $force = false ) {
 		if ( ! VendorHub_Connect::is_connected() ) {
 			return;
 		}
 
-		self::pull_integration_settings();
+		if ( ! $force && get_transient( self::SETTINGS_SYNC_TRANSIENT ) ) {
+			return;
+		}
+
+		if ( self::pull_integration_settings() ) {
+			set_transient( self::SETTINGS_SYNC_TRANSIENT, 1, self::SETTINGS_SYNC_TTL );
+		}
 	}
 
 	/**
@@ -146,13 +143,17 @@ class VendorHub_Vendor_Meta {
 			return false;
 		}
 
-		$key = sanitize_text_field( (string) $data['vendorMetaKey'] );
+		$key      = sanitize_text_field( (string) $data['vendorMetaKey'] );
+		$previous = get_option( self::OPTION_KEY, '' );
+
 		if ( ! self::set_vendor_meta_key( $key ) ) {
 			VendorHub_Connect::log( 'Integration settings returned invalid vendorMetaKey: ' . $key );
 			return false;
 		}
 
-		VendorHub_Connect::log( 'Cached vendor meta key from VendorHub: ' . $key );
+		if ( $key !== $previous ) {
+			VendorHub_Connect::log( 'Updated vendor meta key from VendorHub: ' . $key );
+		}
 
 		return true;
 	}

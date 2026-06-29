@@ -663,7 +663,7 @@ class VendorHub_Connect {
 
 		$api_token = get_option( 'vendorhub_api_token', '' );
 
-		VendorHub_Vendor_Meta::maybe_pull_integration_settings();
+		VendorHub_Vendor_Meta::maybe_pull_integration_settings( true );
 
 		if ( empty( $store_id ) || empty( $api_token ) ) {
 
