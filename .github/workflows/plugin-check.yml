@@ -12,7 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Prepare plugin directory for Plugin Check
+        run: |
+          STAGING="build/vendorhub-woocommerce"
+          mkdir -p "$STAGING/languages"
+          cp vendorhub.php readme.txt uninstall.php "$STAGING/"
+          cp -r includes admin "$STAGING/"
+          cp languages/index.php "$STAGING/languages/"
+
       - name: Run Plugin Check
         uses: wordpress/plugin-check-action@v1
         with:
+          build-dir: build/vendorhub-woocommerce
           slug: vendorhub-woocommerce
