@@ -221,10 +221,10 @@ class VendorHub_REST {
 	/**
 	 * List distinct product meta keys for VendorHub vendor mapping UI.
 	 *
-	 * @param WP_REST_Request $request Request.
+	 * @param WP_REST_Request $_request Request (unused; signature required by REST API).
 	 * @return WP_REST_Response
 	 */
-	public static function handle_product_meta_keys( $request ) {
+	public static function handle_product_meta_keys( $_request ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- REST route callback signature.
 		return new WP_REST_Response(
 			array(
 				'keys' => VendorHub_Vendor_Meta::get_product_meta_keys(),

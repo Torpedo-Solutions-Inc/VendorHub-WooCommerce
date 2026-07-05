@@ -533,6 +533,7 @@ class VendorHub_Connect {
 	 * @return string
 	 */
 	private static function create_pkce_verifier() {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- RFC 7636 PKCE encoding.
 		return rtrim( strtr( base64_encode( random_bytes( 32 ) ), '+/', '-_' ), '=' );
 	}
 
@@ -545,6 +546,7 @@ class VendorHub_Connect {
 	 * @return string
 	 */
 	private static function pkce_challenge( $verifier ) {
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode -- RFC 7636 PKCE S256 challenge.
 		return rtrim( strtr( base64_encode( hash( 'sha256', $verifier, true ) ), '+/', '-_' ), '=' );
 	}
 
