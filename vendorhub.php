@@ -5,7 +5,7 @@
  * Description:       Connect your WooCommerce store to VendorHub for vendor order routing and fulfillment updates.
  * Version:           1.0.0
  * Requires at least: 5.8
- * Tested up to:      6.7
+ * Tested up to:      7.0
  * Requires PHP:      7.4
  * Author:            Torpedo Solutions Inc
  * Author URI:        https://www.myvendorhub.com

@@ -491,7 +491,7 @@ class VendorHub_Settings {
 
 		$path = isset( $parts['path'] ) ? strtolower( $parts['path'] ) : '';
 
-		if ( str_contains( $path, 'wp-admin' ) || str_contains( $path, 'admin-post.php' ) ) {
+		if ( false !== strpos( $path, 'wp-admin' ) || false !== strpos( $path, 'admin-post.php' ) ) {
 
 			return '';
 
