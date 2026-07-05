@@ -207,7 +207,7 @@ class VendorHub_Settings {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback uses state validation.
 		$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$code  = isset( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
+		$code = isset( $_GET['code'] ) ? sanitize_text_field( wp_unslash( $_GET['code'] ) ) : '';
 
 		if ( empty( $code ) ) {
 			wp_safe_redirect( VendorHub_Connect::settings_url( 'connect_error' ) );
@@ -452,7 +452,6 @@ class VendorHub_Settings {
 				return $normalized;
 
 			}
-
 		}
 
 		if ( defined( 'VENDORHUB_API_BASE' ) && VENDORHUB_API_BASE ) {

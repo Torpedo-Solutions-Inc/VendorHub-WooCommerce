@@ -10,14 +10,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$api_base             = VendorHub_Settings::get_api_base();
-$store_id             = get_option( 'vendorhub_store_id', '' );
-$is_connected         = VendorHub_Connect::is_connected();
-$supports_direct      = VendorHub_Connect::supports_direct_connect();
-$privacy_url          = VendorHub_Privacy::PRIVACY_URL;
-$admin_post_url       = admin_url( 'admin-post.php' );
-$disclosure_items     = VendorHub_Onboarding::get_disclosure_checklist();
-$can_launch           = VendorHub_Launch::can_user_launch();
+$api_base         = VendorHub_Settings::get_api_base();
+$store_id         = get_option( 'vendorhub_store_id', '' );
+$is_connected     = VendorHub_Connect::is_connected();
+$supports_direct  = VendorHub_Connect::supports_direct_connect();
+$privacy_url      = VendorHub_Privacy::PRIVACY_URL;
+$admin_post_url   = admin_url( 'admin-post.php' );
+$disclosure_items = VendorHub_Onboarding::get_disclosure_checklist();
+$can_launch       = VendorHub_Launch::can_user_launch();
 
 ?>
 
@@ -230,7 +230,7 @@ $can_launch           = VendorHub_Launch::can_user_launch();
 			</tr>
 			<?php if ( $is_connected ) : ?>
 				<?php
-				$vendor_meta_key   = VendorHub_Vendor_Meta::get_vendor_meta_key();
+				$vendor_meta_key    = VendorHub_Vendor_Meta::get_vendor_meta_key();
 				$discovered_vendors = VendorHub_Vendor_Meta::get_product_vendor_values();
 				?>
 				<tr>

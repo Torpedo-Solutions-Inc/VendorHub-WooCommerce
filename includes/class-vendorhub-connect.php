@@ -289,10 +289,10 @@ class VendorHub_Connect {
 	 * @return string
 	 */
 	public static function get_oauth_authorize_url() {
-		$api_base     = VendorHub_Settings::get_api_base();
-		$state        = self::create_connect_state();
+		$api_base      = VendorHub_Settings::get_api_base();
+		$state         = self::create_connect_state();
 		$code_verifier = self::create_pkce_verifier();
-		$challenge    = self::pkce_challenge( $code_verifier );
+		$challenge     = self::pkce_challenge( $code_verifier );
 
 		set_transient(
 			self::connect_state_transient_key(),

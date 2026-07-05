@@ -12,9 +12,9 @@ defined( 'ABSPATH' ) || exit;
  */
 class VendorHub_Order_Sync {
 
-	const SYNCED_META_KEY     = '_vendorhub_synced';
-	const SYNCING_META_KEY    = '_vendorhub_syncing';
-	const RESPONSES_META_KEY  = '_vendorhub_vendor_responses_created';
+	const SYNCED_META_KEY    = '_vendorhub_synced';
+	const SYNCING_META_KEY   = '_vendorhub_syncing';
+	const RESPONSES_META_KEY = '_vendorhub_vendor_responses_created';
 
 	/** @var string[] Order statuses that trigger forward when changed. */
 	const FORWARDABLE_STATUSES = array( 'processing', 'completed' );
@@ -165,11 +165,11 @@ class VendorHub_Order_Sync {
 		$raw  = wp_remote_retrieve_body( $response );
 
 		if ( $code >= 200 && $code < 300 ) {
-			$data               = json_decode( $raw, true );
-			$responses_created  = is_array( $data ) && array_key_exists( 'vendorResponsesCreated', $data )
+			$data              = json_decode( $raw, true );
+			$responses_created = is_array( $data ) && array_key_exists( 'vendorResponsesCreated', $data )
 				? (int) $data['vendorResponsesCreated']
 				: 0;
-			$mark_synced        = self::should_mark_synced( $payload, $responses_created );
+			$mark_synced       = self::should_mark_synced( $payload, $responses_created );
 
 			if ( $mark_synced ) {
 				$order->update_meta_data( self::SYNCED_META_KEY, 'yes' );
@@ -215,7 +215,7 @@ class VendorHub_Order_Sync {
 			$product = $item->get_product();
 			$vendor  = self::resolve_line_item_vendor( $item, $product );
 
-			$quantity  = max( 1, (int) $item->get_quantity() );
+			$quantity   = max( 1, (int) $item->get_quantity() );
 			$unit_price = (float) $item->get_total() / $quantity;
 
 			$line_items[] = array(
