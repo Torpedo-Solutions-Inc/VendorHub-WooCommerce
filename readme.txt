@@ -1,6 +1,6 @@
 === VendorHub for WooCommerce ===
 
-Contributors: myvendorhub
+Contributors: VendorHub
 
 Tags: woocommerce, vendor, dropshipping, fulfillment, orders
 
