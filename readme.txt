@@ -1,6 +1,6 @@
 === VendorHub for WooCommerce ===
 
-Contributors: torpedosolutions
+Contributors: myvendorhub
 
 Tags: woocommerce, vendor, dropshipping, fulfillment, orders
 
@@ -10,7 +10,7 @@ Tested up to: 7.0
 
 Requires PHP: 7.4
 
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 
 License: GPLv2 or later
 
@@ -198,6 +198,16 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 
 
+= 1.1.0 =
+
+* SSO launch — Open VendorHub from wp-admin without re-login.
+* Configurable vendor meta key for multi-vendor plugins.
+* Onboarding UX and permissions disclosure improvements.
+* WordPress 7.0 compatibility.
+* PHPCS, Plugin Check CI, and E2E verification script.
+
+
+
 = 1.0.0 =
 
 * Initial release: redirect connect, manual token paste, order ingest, REST callback, settings UI, privacy disclosures, WordPress.org readiness (Phase 7F).
@@ -205,6 +215,12 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 
 == Upgrade Notice ==
+
+
+
+= 1.1.0 =
+
+Adds SSO launch, vendor meta configuration, and WordPress 7.0 support.
 
 
 

@@ -3,7 +3,7 @@
  * Plugin Name:       VendorHub for WooCommerce
  * Plugin URI:        https://www.myvendorhub.com
  * Description:       Connect your WooCommerce store to VendorHub for vendor order routing and fulfillment updates.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 5.8
  * Tested up to:      7.0
  * Requires PHP:      7.4
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VENDORHUB_WC_VERSION', '1.0.0' );
+define( 'VENDORHUB_WC_VERSION', '1.1.0' );
 define( 'VENDORHUB_WC_PLUGIN_FILE', __FILE__ );
 define( 'VENDORHUB_WC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'VENDORHUB_WC_DEFAULT_API_BASE', 'https://www.myvendorhub.com' );

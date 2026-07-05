@@ -138,15 +138,15 @@ add_filter( 'vendorhub_wc_oauth_client_id', fn() => 'your-public-client-id' );
 
 ## Acceptance checklist
 
-- [ ] Fresh install → onboarding redirect → permissions before external redirect
-- [ ] Redirect connect saves `storeId` + `apiToken`
-- [ ] Connected state shows **Open VendorHub** (SSO launch)
-- [ ] SSO launch lands on VendorHub `/app` without re-login
-- [ ] Manual token paste works (Advanced)
+- [x] Fresh install → onboarding redirect → permissions before external redirect
+- [x] Redirect connect saves `storeId` + `apiToken`
+- [x] Connected state shows **Open VendorHub** (SSO launch)
+- [x] SSO launch lands on VendorHub `/app` without re-login
+- [x] Manual token paste works (Advanced)
 - [ ] Direct HMAC connect works (Advanced, dev only)
-- [ ] New WC order ingested in VendorHub
-- [ ] Vendor response adds note on WC order
-- [ ] Invalid callback signature rejected
-- [ ] Plugin shows graceful onboarding when not connected
-- [ ] User without `manage_woocommerce` cannot connect
+- [x] New WC order ingested in VendorHub
+- [x] Vendor response adds note on WC order
+- [x] Invalid callback signature rejected
+- [x] Plugin shows graceful onboarding when not connected
+- [x] User without `manage_woocommerce` cannot connect
 - [ ] OAuth connect (Phase 2) when platform ships
