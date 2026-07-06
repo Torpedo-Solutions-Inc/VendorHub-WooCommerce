@@ -3,7 +3,7 @@
  * Plugin Name:       VendorHub for WooCommerce
  * Plugin URI:        https://github.com/Torpedo-Solutions-Inc/VendorHub-WooCommerce
  * Description:       Connect your WooCommerce store to VendorHub for vendor order routing and fulfillment updates.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Requires at least: 5.8
  * Tested up to:      7.0
  * Requires PHP:      7.4
@@ -11,7 +11,7 @@
  * Author URI:        https://www.myvendorhub.com
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       vendorhub-woocommerce
+ * Text Domain:       vendorhub-for-woocommerce
  * WC requires at least: 6.0
  * WC tested up to:   9.6
  *
@@ -20,7 +20,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VENDORHUB_WC_VERSION', '1.1.0' );
+define( 'VENDORHUB_WC_VERSION', '1.1.1' );
 define( 'VENDORHUB_WC_PLUGIN_FILE', __FILE__ );
 define( 'VENDORHUB_WC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'VENDORHUB_WC_DEFAULT_API_BASE', 'https://www.myvendorhub.com' );
@@ -42,7 +42,7 @@ register_activation_hook( VENDORHUB_WC_PLUGIN_FILE, array( 'VendorHub_Onboarding
  */
 function vendorhub_wc_load_textdomain() {
 	load_plugin_textdomain(
-		'vendorhub-woocommerce',
+		'vendorhub-for-woocommerce',
 		false,
 		dirname( plugin_basename( VENDORHUB_WC_PLUGIN_FILE ) ) . '/languages'
 	);
@@ -72,7 +72,7 @@ function vendorhub_wc_missing_wc_notice() {
 	echo '<div class="notice notice-error"><p>';
 	echo esc_html__(
 		'VendorHub for WooCommerce requires WooCommerce to be installed and active.',
-		'vendorhub-woocommerce'
+		'vendorhub-for-woocommerce'
 	);
 	echo '</p></div>';
 }

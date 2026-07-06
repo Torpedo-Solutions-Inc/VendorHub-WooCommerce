@@ -81,7 +81,7 @@ class VendorHub_Settings {
 
 	public static function add_settings_tab( $tabs ) {
 
-		$tabs['vendorhub'] = __( 'VendorHub', 'vendorhub-woocommerce' );
+		$tabs['vendorhub'] = __( 'VendorHub', 'vendorhub-for-woocommerce' );
 
 		return $tabs;
 	}
@@ -148,7 +148,7 @@ class VendorHub_Settings {
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 
-			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-woocommerce' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-for-woocommerce' ) );
 
 		}
 
@@ -173,7 +173,7 @@ class VendorHub_Settings {
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 
-			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-woocommerce' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-for-woocommerce' ) );
 
 		}
 
@@ -201,7 +201,7 @@ class VendorHub_Settings {
 	 */
 	public static function handle_oauth_callback() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-woocommerce' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-for-woocommerce' ) );
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth callback uses state validation.
@@ -232,7 +232,7 @@ class VendorHub_Settings {
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 
-			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-woocommerce' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-for-woocommerce' ) );
 
 		}
 
@@ -261,7 +261,7 @@ class VendorHub_Settings {
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 
-			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-woocommerce' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-for-woocommerce' ) );
 
 		}
 
@@ -286,7 +286,7 @@ class VendorHub_Settings {
 
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 
-			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-woocommerce' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-for-woocommerce' ) );
 
 		}
 
@@ -306,7 +306,7 @@ class VendorHub_Settings {
 	 */
 	public static function handle_launch() {
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-woocommerce' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'vendorhub-for-woocommerce' ) );
 		}
 
 		check_admin_referer( 'vendorhub_launch' );
@@ -386,23 +386,23 @@ class VendorHub_Settings {
 
 		$messages = array(
 
-			'saved'                => __( 'Settings saved.', 'vendorhub-woocommerce' ),
+			'saved'                => __( 'Settings saved.', 'vendorhub-for-woocommerce' ),
 
-			'welcome'              => __( 'Welcome! Review the permissions below, then connect your store to VendorHub.', 'vendorhub-woocommerce' ),
+			'welcome'              => __( 'Welcome! Review the permissions below, then connect your store to VendorHub.', 'vendorhub-for-woocommerce' ),
 
-			'connected'            => __( 'Successfully connected to VendorHub.', 'vendorhub-woocommerce' ),
+			'connected'            => __( 'Successfully connected to VendorHub.', 'vendorhub-for-woocommerce' ),
 
-			'disconnected'         => __( 'Disconnected from VendorHub.', 'vendorhub-woocommerce' ),
+			'disconnected'         => __( 'Disconnected from VendorHub.', 'vendorhub-for-woocommerce' ),
 
-			'test_ok'              => __( 'Connection test successful.', 'vendorhub-woocommerce' ),
+			'test_ok'              => __( 'Connection test successful.', 'vendorhub-for-woocommerce' ),
 
-			'connect_error'        => __( 'Could not connect to VendorHub. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+			'connect_error'        => __( 'Could not connect to VendorHub. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
 
-			'test_error'           => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-woocommerce' ),
+			'test_error'           => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
 
-			'permissions_required' => __( 'Please review and accept the permissions disclosure before connecting.', 'vendorhub-woocommerce' ),
+			'permissions_required' => __( 'Please review and accept the permissions disclosure before connecting.', 'vendorhub-for-woocommerce' ),
 
-			'launch_error'         => __( 'Could not open VendorHub. Disconnect, reconnect via Connect to VendorHub (not manual API paste), then try again. See WooCommerce → Status → Logs (source: vendorhub) for the launch URL.', 'vendorhub-woocommerce' ),
+			'launch_error'         => __( 'Could not open VendorHub. Disconnect, reconnect via Connect to VendorHub (not manual API paste), then try again. See WooCommerce → Status → Logs (source: vendorhub) for the launch URL.', 'vendorhub-for-woocommerce' ),
 
 		);
 
@@ -416,7 +416,7 @@ class VendorHub_Settings {
 
 				echo ' <a href="' . esc_url( self::admin_post_url( 'vendorhub_launch', 'vendorhub_launch' ) ) . '" class="button button-primary" style="margin-left:8px;vertical-align:middle;">';
 
-				esc_html_e( 'Open VendorHub', 'vendorhub-woocommerce' );
+				esc_html_e( 'Open VendorHub', 'vendorhub-for-woocommerce' );
 
 				echo '</a>';
 

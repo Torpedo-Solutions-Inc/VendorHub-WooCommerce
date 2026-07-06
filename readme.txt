@@ -10,7 +10,7 @@ Tested up to: 7.0
 
 Requires PHP: 7.4
 
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 
 License: GPLv2 or later
 
@@ -198,6 +198,13 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 
 
+= 1.1.1 =
+
+* Align text domain with WordPress.org slug (`vendorhub-for-woocommerce`).
+* Fix Plugin URI / Author URI headers for directory submission.
+
+
+
 = 1.1.0 =
 
 * SSO launch — Open VendorHub from wp-admin without re-login.
@@ -218,6 +225,12 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 
 
+= 1.1.1 =
+
+Fixes WordPress.org submission headers and text domain alignment.
+
+
+
 = 1.1.0 =
 
 Adds SSO launch, vendor meta configuration, and WordPress 7.0 support.
@@ -227,4 +240,3 @@ Adds SSO launch, vendor meta configuration, and WordPress 7.0 support.
 = 1.0.0 =
 
 Initial public release for WordPress.org submission.
-

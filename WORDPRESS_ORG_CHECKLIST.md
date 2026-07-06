@@ -1,6 +1,6 @@
 # WordPress.org Submission Checklist — VendorHub for WooCommerce
 
-Recommended plugin slug: **`vendorhub-woocommerce`** (alternate: `vendorhub-for-woocommerce`).
+Recommended plugin slug: **`vendorhub-for-woocommerce`** (assigned by WordPress.org — `woocommerce` cannot appear as a standalone slug segment).
 
 ## Pre-submission (automated / repo)
 
@@ -23,7 +23,7 @@ Recommended plugin slug: **`vendorhub-woocommerce`** (alternate: `vendorhub-for-
 ## WordPress.org account
 
 - [x] WordPress.org account — [myvendorhub](https://profiles.wordpress.org/myvendorhub/) (torpedosolutionsinc@gmail.com)
-- [ ] Plugin slug reservation — submit at https://wordpress.org/plugins/developers/add/ with slug `vendorhub-woocommerce`
+- [x] Plugin submitted — slug **`vendorhub-for-woocommerce`** (July 6, 2026; awaiting review)
 - [ ] SVN deploy after approval (steps below)
 
 > **Note:** WordPress.com (`myvendorhub.wordpress.com`) is separate from WordPress.org plugin hosting. Plugin directory submission uses the **.org** account only.
@@ -40,28 +40,28 @@ Recommended plugin slug: **`vendorhub-woocommerce`** (alternate: `vendorhub-for-
 ## SVN deploy (after approval)
 
 ```bash
-svn co https://plugins.svn.wordpress.org/vendorhub-woocommerce
-cd vendorhub-woocommerce
+svn co https://plugins.svn.wordpress.org/vendorhub-for-woocommerce
+cd vendorhub-for-woocommerce
 ```
 
 **Trunk** — copy plugin source (exclude `.git`, repo `assets/`, `*.zip`):
 
 ```bash
 # From plugin repo root
-rsync -av --exclude .git --exclude assets --exclude '*.zip' ./ vendorhub-woocommerce/trunk/
+rsync -av --exclude .git --exclude assets --exclude '*.zip' ./ vendorhub-for-woocommerce/trunk/
 ```
 
 **Assets** — org listing images only (not in the plugin ZIP):
 
 ```bash
-cp assets/* ../vendorhub-woocommerce/assets/
+cp assets/* ../vendorhub-for-woocommerce/assets/
 ```
 
 **Tag release** (must match `readme.txt` Stable tag):
 
 ```bash
-svn cp trunk tags/1.1.0
-svn ci -m "Tag version 1.1.0"
+svn cp trunk tags/1.1.1
+svn ci -m "Tag version 1.1.1"
 ```
 
 ## PHPCS warnings (documented)

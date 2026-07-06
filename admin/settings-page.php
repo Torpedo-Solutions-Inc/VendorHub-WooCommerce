@@ -21,7 +21,7 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 
 ?>
 
-<h2><?php esc_html_e( 'VendorHub', 'vendorhub-woocommerce' ); ?></h2>
+<h2><?php esc_html_e( 'VendorHub', 'vendorhub-for-woocommerce' ); ?></h2>
 
 <?php if ( $is_connected ) : ?>
 
@@ -29,7 +29,7 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 		<?php
 		esc_html_e(
 			'Your store is connected to VendorHub. Orders are forwarded automatically; manage vendors and responses in the VendorHub dashboard.',
-			'vendorhub-woocommerce'
+			'vendorhub-for-woocommerce'
 		);
 		?>
 	</p>
@@ -37,14 +37,14 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 	<table class="form-table" role="presentation">
 		<tbody>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Connection status', 'vendorhub-woocommerce' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Connection status', 'vendorhub-for-woocommerce' ); ?></th>
 				<td>
-					<span class="vendorhub-status vendorhub-status--connected"><?php esc_html_e( 'Connected', 'vendorhub-woocommerce' ); ?></span>
+					<span class="vendorhub-status vendorhub-status--connected"><?php esc_html_e( 'Connected', 'vendorhub-for-woocommerce' ); ?></span>
 				</td>
 			</tr>
 			<tr>
 				<th scope="row">
-					<label for="vendorhub_store_id"><?php esc_html_e( 'Store ID', 'vendorhub-woocommerce' ); ?></label>
+					<label for="vendorhub_store_id"><?php esc_html_e( 'Store ID', 'vendorhub-for-woocommerce' ); ?></label>
 				</th>
 				<td>
 					<input
@@ -66,20 +66,20 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 				href="<?php echo esc_url( VendorHub_Settings::admin_post_url( 'vendorhub_launch', 'vendorhub_launch' ) ); ?>"
 				class="button button-primary"
 			>
-				<?php esc_html_e( 'Open VendorHub', 'vendorhub-woocommerce' ); ?>
+				<?php esc_html_e( 'Open VendorHub', 'vendorhub-for-woocommerce' ); ?>
 			</a>
 		<?php endif; ?>
 		<a
 			href="<?php echo esc_url( VendorHub_Settings::admin_post_url( 'vendorhub_test_connection', 'vendorhub_test_connection' ) ); ?>"
 			class="button"
 		>
-			<?php esc_html_e( 'Test connection', 'vendorhub-woocommerce' ); ?>
+			<?php esc_html_e( 'Test connection', 'vendorhub-for-woocommerce' ); ?>
 		</a>
 		<a
 			href="<?php echo esc_url( VendorHub_Settings::admin_post_url( 'vendorhub_disconnect', 'vendorhub_disconnect' ) ); ?>"
 			class="button"
 		>
-			<?php esc_html_e( 'Disconnect', 'vendorhub-woocommerce' ); ?>
+			<?php esc_html_e( 'Disconnect', 'vendorhub-for-woocommerce' ); ?>
 		</a>
 	</p>
 
@@ -89,13 +89,13 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 		<?php
 		esc_html_e(
 			'Connect your WooCommerce store to VendorHub for vendor order routing. Review what data is shared before you connect.',
-			'vendorhub-woocommerce'
+			'vendorhub-for-woocommerce'
 		);
 		?>
 	</p>
 
 	<div class="vendorhub-onboarding-card">
-		<h3><?php esc_html_e( 'Permissions & data sharing', 'vendorhub-woocommerce' ); ?></h3>
+		<h3><?php esc_html_e( 'Permissions & data sharing', 'vendorhub-for-woocommerce' ); ?></h3>
 		<ul class="vendorhub-disclosure-list">
 			<?php foreach ( $disclosure_items as $item ) : ?>
 				<li>
@@ -115,7 +115,7 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 		<p>
 			<label for="vendorhub_accept_permissions">
 				<input type="checkbox" id="vendorhub_accept_permissions" name="vendorhub_accept_permissions" value="1" required />
-				<?php esc_html_e( 'I have reviewed the permissions above and agree to connect this store to VendorHub.', 'vendorhub-woocommerce' ); ?>
+				<?php esc_html_e( 'I have reviewed the permissions above and agree to connect this store to VendorHub.', 'vendorhub-for-woocommerce' ); ?>
 			</label>
 		</p>
 		<p class="submit vendorhub-actions">
@@ -127,7 +127,7 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 				name="action"
 				value="vendorhub_redirect_connect"
 			>
-				<?php esc_html_e( 'Connect to VendorHub', 'vendorhub-woocommerce' ); ?>
+				<?php esc_html_e( 'Connect to VendorHub', 'vendorhub-for-woocommerce' ); ?>
 			</button>
 		</p>
 	</div>
@@ -135,15 +135,15 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 <?php endif; ?>
 
 <details class="vendorhub-advanced">
-	<summary><?php esc_html_e( 'Advanced', 'vendorhub-woocommerce' ); ?></summary>
+	<summary><?php esc_html_e( 'Advanced', 'vendorhub-for-woocommerce' ); ?></summary>
 
 	<?php if ( ! $is_connected ) : ?>
-		<h4><?php esc_html_e( 'Manual connection', 'vendorhub-woocommerce' ); ?></h4>
+		<h4><?php esc_html_e( 'Manual connection', 'vendorhub-for-woocommerce' ); ?></h4>
 		<p class="description">
 			<?php
 			esc_html_e(
 				'Copy your Store ID and API token from VendorHub → Settings → API access and paste them below.',
-				'vendorhub-woocommerce'
+				'vendorhub-for-woocommerce'
 			);
 			?>
 		</p>
@@ -154,7 +154,7 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 			<tbody>
 				<tr>
 					<th scope="row">
-						<label for="vendorhub_manual_store_id"><?php esc_html_e( 'Store ID', 'vendorhub-woocommerce' ); ?></label>
+						<label for="vendorhub_manual_store_id"><?php esc_html_e( 'Store ID', 'vendorhub-for-woocommerce' ); ?></label>
 					</th>
 					<td>
 						<input type="text" id="vendorhub_manual_store_id" name="vendorhub_manual_store_id" class="regular-text" value="" autocomplete="off" />
@@ -162,7 +162,7 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="vendorhub_manual_api_token"><?php esc_html_e( 'API token', 'vendorhub-woocommerce' ); ?></label>
+						<label for="vendorhub_manual_api_token"><?php esc_html_e( 'API token', 'vendorhub-for-woocommerce' ); ?></label>
 					</th>
 					<td>
 						<input type="password" id="vendorhub_manual_api_token" name="vendorhub_manual_api_token" class="regular-text" value="" autocomplete="off" />
@@ -180,12 +180,12 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 				name="action"
 				value="vendorhub_save_credentials"
 			>
-				<?php esc_html_e( 'Save credentials', 'vendorhub-woocommerce' ); ?>
+				<?php esc_html_e( 'Save credentials', 'vendorhub-for-woocommerce' ); ?>
 			</button>
 		</p>
 	<?php endif; ?>
 
-	<h4><?php esc_html_e( 'Developer settings', 'vendorhub-woocommerce' ); ?></h4>
+	<h4><?php esc_html_e( 'Developer settings', 'vendorhub-for-woocommerce' ); ?></h4>
 
 	<?php wp_nonce_field( 'vendorhub_save_settings', 'vendorhub_settings_nonce', false ); ?>
 
@@ -193,7 +193,7 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 		<tbody>
 			<tr>
 				<th scope="row">
-					<label for="vendorhub_api_base"><?php esc_html_e( 'VendorHub API base URL', 'vendorhub-woocommerce' ); ?></label>
+					<label for="vendorhub_api_base"><?php esc_html_e( 'VendorHub API base URL', 'vendorhub-for-woocommerce' ); ?></label>
 				</th>
 				<td>
 					<input
@@ -208,24 +208,24 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 						<?php
 						esc_html_e(
 							'VendorHub server origin only (no paths). Default: https://www.myvendorhub.com. Do not paste the Open VendorHub or admin-post link here.',
-							'vendorhub-woocommerce'
+							'vendorhub-for-woocommerce'
 						);
 						?>
 					</p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Site URL', 'vendorhub-woocommerce' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Site URL', 'vendorhub-for-woocommerce' ); ?></th>
 				<td>
 					<code><?php echo esc_html( VendorHub_Connect::get_site_url() ); ?></code>
-					<p class="description"><?php esc_html_e( 'Sent to VendorHub during connect.', 'vendorhub-woocommerce' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Sent to VendorHub during connect.', 'vendorhub-for-woocommerce' ); ?></p>
 				</td>
 			</tr>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Callback endpoint', 'vendorhub-woocommerce' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Callback endpoint', 'vendorhub-for-woocommerce' ); ?></th>
 				<td>
 					<code><?php echo esc_html( rest_url( 'vendorhub/v1/order/123' ) ); ?></code>
-					<p class="description"><?php esc_html_e( 'VendorHub pushes order updates to this REST route.', 'vendorhub-woocommerce' ); ?></p>
+					<p class="description"><?php esc_html_e( 'VendorHub pushes order updates to this REST route.', 'vendorhub-for-woocommerce' ); ?></p>
 				</td>
 			</tr>
 			<?php if ( $is_connected ) : ?>
@@ -234,20 +234,20 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 				$discovered_vendors = VendorHub_Vendor_Meta::get_product_vendor_values();
 				?>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Vendor meta key', 'vendorhub-woocommerce' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Vendor meta key', 'vendorhub-for-woocommerce' ); ?></th>
 					<td>
 						<code><?php echo esc_html( $vendor_meta_key ); ?></code>
-						<p class="description"><?php esc_html_e( 'Must match your product vendor field name in WooCommerce.', 'vendorhub-woocommerce' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Must match your product vendor field name in WooCommerce.', 'vendorhub-for-woocommerce' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Discovered vendors', 'vendorhub-woocommerce' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Discovered vendors', 'vendorhub-for-woocommerce' ); ?></th>
 					<td>
 						<?php
 						echo esc_html(
 							sprintf(
 								/* translators: %d: number of vendors found on products */
-								_n( '%d vendor on products', '%d vendors on products', count( $discovered_vendors ), 'vendorhub-woocommerce' ),
+								_n( '%d vendor on products', '%d vendors on products', count( $discovered_vendors ), 'vendorhub-for-woocommerce' ),
 								count( $discovered_vendors )
 							)
 						);
@@ -255,14 +255,14 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 							echo '<br /><code>' . esc_html( implode( ', ', $discovered_vendors ) ) . '</code>';
 						}
 						?>
-						<p class="description"><?php esc_html_e( 'Local preview of what Sync Now should import into VendorHub.', 'vendorhub-woocommerce' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Local preview of what Sync Now should import into VendorHub.', 'vendorhub-for-woocommerce' ); ?></p>
 					</td>
 				</tr>
 				<tr>
-					<th scope="row"><?php esc_html_e( 'Vendor sync endpoint', 'vendorhub-woocommerce' ); ?></th>
+					<th scope="row"><?php esc_html_e( 'Vendor sync endpoint', 'vendorhub-for-woocommerce' ); ?></th>
 					<td>
 						<code><?php echo esc_html( rest_url( 'vendorhub/v1/product-vendors' ) ); ?></code>
-						<p class="description"><?php esc_html_e( 'VendorHub must reach this URL from the internet. Localhost stores need ngrok or a public tunnel.', 'vendorhub-woocommerce' ); ?></p>
+						<p class="description"><?php esc_html_e( 'VendorHub must reach this URL from the internet. Localhost stores need ngrok or a public tunnel.', 'vendorhub-for-woocommerce' ); ?></p>
 					</td>
 				</tr>
 			<?php endif; ?>
@@ -270,32 +270,32 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 	</table>
 
 	<p class="description">
-		<?php esc_html_e( 'Use the Save changes button at the bottom of this page to save the API base URL.', 'vendorhub-woocommerce' ); ?>
+		<?php esc_html_e( 'Use the Save changes button at the bottom of this page to save the API base URL.', 'vendorhub-for-woocommerce' ); ?>
 	</p>
 
 	<?php if ( $supports_direct ) : ?>
-		<h4><?php esc_html_e( 'Direct connect (development)', 'vendorhub-woocommerce' ); ?></h4>
+		<h4><?php esc_html_e( 'Direct connect (development)', 'vendorhub-for-woocommerce' ); ?></h4>
 		<p class="description">
-			<?php esc_html_e( 'HMAC-signed registration using VENDORHUB_WC_CONNECT_SECRET in wp-config.php.', 'vendorhub-woocommerce' ); ?>
+			<?php esc_html_e( 'HMAC-signed registration using VENDORHUB_WC_CONNECT_SECRET in wp-config.php.', 'vendorhub-for-woocommerce' ); ?>
 		</p>
 		<p class="submit vendorhub-actions">
 			<a
 				href="<?php echo esc_url( VendorHub_Settings::admin_post_url( 'vendorhub_connect', 'vendorhub_connect' ) ); ?>"
 				class="button"
 			>
-				<?php esc_html_e( 'Direct connect (dev)', 'vendorhub-woocommerce' ); ?>
+				<?php esc_html_e( 'Direct connect (dev)', 'vendorhub-for-woocommerce' ); ?>
 			</a>
 		</p>
 	<?php endif; ?>
 
-	<h4><?php esc_html_e( 'Privacy & external services', 'vendorhub-woocommerce' ); ?></h4>
+	<h4><?php esc_html_e( 'Privacy & external services', 'vendorhub-for-woocommerce' ); ?></h4>
 	<p>
 		<?php
 		printf(
 			/* translators: %s: VendorHub privacy policy URL */
 			esc_html__(
 				'Full privacy disclosure is available under Settings → Privacy. VendorHub privacy policy: %s',
-				'vendorhub-woocommerce'
+				'vendorhub-for-woocommerce'
 			),
 			'<a href="' . esc_url( $privacy_url ) . '" target="_blank" rel="noopener noreferrer">' . esc_html( $privacy_url ) . '</a>'
 		);
