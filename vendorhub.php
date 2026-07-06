@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       VendorHub for WooCommerce
- * Plugin URI:        https://www.myvendorhub.com
+ * Plugin URI:        https://github.com/Torpedo-Solutions-Inc/VendorHub-WooCommerce
  * Description:       Connect your WooCommerce store to VendorHub for vendor order routing and fulfillment updates.
  * Version:           1.1.0
  * Requires at least: 5.8
