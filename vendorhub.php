@@ -7,6 +7,7 @@
  * Requires at least: 5.8
  * Tested up to:      7.0
  * Requires PHP:      7.4
+ * Requires Plugins:  woocommerce
  * Author:            Torpedo Solutions Inc
  * Author URI:        https://www.myvendorhub.com
  * License:           GPL v2 or later
@@ -38,18 +39,6 @@ require_once VENDORHUB_WC_PLUGIN_DIR . 'includes/class-vendorhub-settings.php';
 register_activation_hook( VENDORHUB_WC_PLUGIN_FILE, array( 'VendorHub_Onboarding', 'activate' ) );
 
 /**
- * Load plugin text domain for translations.
- */
-function vendorhub_wc_load_textdomain() {
-	load_plugin_textdomain(
-		'vendorhub-for-woocommerce',
-		false,
-		dirname( plugin_basename( VENDORHUB_WC_PLUGIN_FILE ) ) . '/languages'
-	);
-}
-add_action( 'init', 'vendorhub_wc_load_textdomain' );
-
-/**
  * Bootstrap plugin after WooCommerce loads.
  */
 function vendorhub_wc_init() {
@@ -69,6 +58,15 @@ add_action( 'plugins_loaded', 'vendorhub_wc_init' );
  * Admin notice when WooCommerce is inactive.
  */
 function vendorhub_wc_missing_wc_notice() {
+	if ( ! function_exists( 'get_current_screen' ) ) {
+		return;
+	}
+
+	$screen = get_current_screen();
+	if ( ! $screen || 'plugins' !== $screen->id ) {
+		return;
+	}
+
 	echo '<div class="notice notice-error"><p>';
 	echo esc_html__(
 		'VendorHub for WooCommerce requires WooCommerce to be installed and active.',

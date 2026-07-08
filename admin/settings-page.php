@@ -302,24 +302,3 @@ $can_launch       = VendorHub_Launch::can_user_launch();
 		?>
 	</p>
 </details>
-
-<style>
-	.vendorhub-status { font-weight: 600; }
-	.vendorhub-status--connected { color: #007017; }
-	.vendorhub-status--disconnected { color: #b32d2e; }
-	.vendorhub-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-	.vendorhub-onboarding-card {
-		background: #fff;
-		border: 1px solid #c3c4c7;
-		border-left: 4px solid #2271b1;
-		padding: 16px 20px;
-		margin: 16px 0;
-		max-width: 720px;
-	}
-	.vendorhub-disclosure-list { margin: 12px 0 20px; padding-left: 1.2em; list-style: disc; }
-	.vendorhub-disclosure-list li { margin-bottom: 12px; }
-	.vendorhub-disclosure-list li strong { display: block; margin-bottom: 2px; }
-	.vendorhub-advanced { margin-top: 24px; max-width: 720px; }
-	.vendorhub-advanced summary { cursor: pointer; font-weight: 600; padding: 8px 0; }
-	.vendorhub-advanced[open] summary { margin-bottom: 12px; }
-</style>

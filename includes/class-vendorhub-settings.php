@@ -60,6 +60,8 @@ class VendorHub_Settings {
 
 		add_action( 'admin_notices', array( __CLASS__, 'admin_notices' ) );
 
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_admin_styles' ) );
+
 		add_filter( 'allowed_redirect_hosts', array( __CLASS__, 'allow_vendorhub_redirect_hosts' ) );
 
 		VendorHub_Privacy::init();
@@ -97,6 +99,31 @@ class VendorHub_Settings {
 	public static function render_settings_page() {
 
 		require VENDORHUB_WC_PLUGIN_DIR . 'admin/settings-page.php';
+	}
+
+
+
+	/**
+	 * Enqueue admin styles on the VendorHub WooCommerce settings tab.
+	 *
+	 * @param string $hook_suffix Current admin page hook suffix.
+	 */
+	public static function enqueue_admin_styles( $hook_suffix ) {
+		if ( 'woocommerce_page_wc-settings' !== $hook_suffix ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Tab routing only; no mutation.
+		if ( ! isset( $_GET['tab'] ) || 'vendorhub' !== $_GET['tab'] ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'vendorhub-admin-settings',
+			plugins_url( 'admin/admin-settings.css', VENDORHUB_WC_PLUGIN_FILE ),
+			array(),
+			VENDORHUB_WC_VERSION
+		);
 	}
 
 
@@ -414,7 +441,7 @@ class VendorHub_Settings {
 
 			if ( 'connected' === $status && VendorHub_Launch::can_user_launch() ) {
 
-				echo ' <a href="' . esc_url( self::admin_post_url( 'vendorhub_launch', 'vendorhub_launch' ) ) . '" class="button button-primary" style="margin-left:8px;vertical-align:middle;">';
+				echo ' <a href="' . esc_url( self::admin_post_url( 'vendorhub_launch', 'vendorhub_launch' ) ) . '" class="button button-primary vendorhub-notice-launch">';
 
 				esc_html_e( 'Open VendorHub', 'vendorhub-for-woocommerce' );
 
