@@ -264,7 +264,7 @@ class VendorHub_Order_Sync {
 
 		if ( ! empty( $shipping['address_1'] ) ) {
 			$normalized['shippingAddress'] = array(
-				'name'     => $shipping_name ? $shipping_name : __( 'Customer', 'vendorhub-for-woocommerce' ),
+				'name'     => $shipping_name ? $shipping_name : __( 'Customer', 'myvendorhub-for-woocommerce' ),
 				'phone'    => $shipping['phone'] ? $shipping['phone'] : null,
 				'address1' => $shipping['address_1'],
 				'address2' => $shipping['address_2'] ? $shipping['address_2'] : null,

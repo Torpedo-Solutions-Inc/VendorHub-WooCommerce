@@ -25,6 +25,7 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 				return 'https://example.com/wp-admin/' . ltrim( $path, '/' );
 			}
 		);
+		Functions\when( 'get_current_user_id' )->justReturn( 1 );
 	}
 
 	/**
@@ -56,6 +57,15 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 	}
 
 	/**
+	 * Empty connect state is rejected (prevents CSRF credential injection).
+	 */
+	public function test_validate_connect_state_rejects_empty_state() {
+		Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+
+		$this->assertFalse( VendorHub_Connect::validate_connect_state( '' ) );
+	}
+
+	/**
 	 * Redirect return handler accepts credentials without tab=vendorhub in the URL.
 	 */
 	public function test_maybe_handle_redirect_return_without_vendorhub_tab() {
@@ -63,6 +73,7 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 			'page'                 => 'wc-settings',
 			'vendorhub_store_id'   => 'wc-example.com',
 			'vendorhub_api_token'  => str_repeat( 'a', 64 ),
+			'state'                => 'valid-state-nonce',
 		);
 
 		Functions\when( 'is_admin' )->justReturn( true );
@@ -78,6 +89,12 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 				return '';
 			}
 		);
+		Functions\when( 'get_transient' )->justReturn(
+			array(
+				'state' => 'valid-state-nonce',
+			)
+		);
+		Functions\when( 'delete_transient' )->justReturn( true );
 		Functions\when( 'wp_safe_redirect' )->alias(
 			function ( $url ) {
 				throw new RedirectException( $url );
@@ -91,6 +108,61 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 			$this->assertStringContainsString( 'tab=vendorhub', $e->url );
 			$this->assertStringContainsString( 'vendorhub_status=connected', $e->url );
 			$this->assertStringNotContainsString( 'vendorhub_api_token', $e->url );
+		}
+
+		$_GET = array();
+	}
+
+	/**
+	 * Redirect return handler rejects missing connect state.
+	 */
+	public function test_maybe_handle_redirect_return_rejects_missing_state() {
+		$_GET = array(
+			'page'                => 'wc-settings',
+			'vendorhub_store_id'  => 'wc-example.com',
+			'vendorhub_api_token' => str_repeat( 'a', 64 ),
+		);
+
+		Functions\when( 'is_admin' )->justReturn( true );
+		Functions\when( 'current_user_can' )->justReturn( true );
+
+		VendorHub_Connect::maybe_handle_redirect_return();
+
+		$this->assertTrue( true, 'Handler returned without saving when state is missing.' );
+		$_GET = array();
+	}
+
+	/**
+	 * Redirect return handler rejects invalid connect state.
+	 */
+	public function test_maybe_handle_redirect_return_rejects_invalid_state() {
+		$_GET = array(
+			'page'                => 'wc-settings',
+			'vendorhub_store_id'  => 'wc-example.com',
+			'vendorhub_api_token' => str_repeat( 'a', 64 ),
+			'state'               => 'wrong-state',
+		);
+
+		Functions\when( 'is_admin' )->justReturn( true );
+		Functions\when( 'current_user_can' )->justReturn( true );
+		Functions\when( 'sanitize_text_field' )->returnArg( 1 );
+		Functions\when( 'wp_unslash' )->returnArg( 1 );
+		Functions\when( 'get_transient' )->justReturn(
+			array(
+				'state' => 'expected-state',
+			)
+		);
+		Functions\when( 'wp_safe_redirect' )->alias(
+			function ( $url ) {
+				throw new RedirectException( $url );
+			}
+		);
+
+		try {
+			VendorHub_Connect::maybe_handle_redirect_return();
+			$this->fail( 'Expected redirect to connect_error for invalid state.' );
+		} catch ( RedirectException $e ) {
+			$this->assertStringContainsString( 'vendorhub_status=connect_error', $e->url );
 		}
 
 		$_GET = array();

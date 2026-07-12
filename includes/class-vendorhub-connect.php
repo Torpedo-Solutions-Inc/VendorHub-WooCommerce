@@ -47,8 +47,8 @@ class VendorHub_Connect {
 				'success' => false,
 
 				'message' => __(
-					'Direct connect requires VENDORHUB_WC_CONNECT_SECRET in wp-config.php. Use the VendorHub redirect button or paste credentials from your VendorHub dashboard.',
-					'vendorhub-for-woocommerce'
+					'Direct connect requires VENDORHUB_WC_CONNECT_SECRET in wp-config.php. Use the MyVendorHub redirect button or paste credentials from your MyVendorHub dashboard.',
+					'myvendorhub-for-woocommerce'
 				),
 
 			);
@@ -75,7 +75,7 @@ class VendorHub_Connect {
 		if ( false === $signing_payload ) {
 			return array(
 				'success' => false,
-				'message' => __( 'Failed to encode connect payload.', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Failed to encode connect payload.', 'myvendorhub-for-woocommerce' ),
 			);
 		}
 
@@ -112,7 +112,7 @@ class VendorHub_Connect {
 
 				'success' => false,
 
-				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 
 			);
 
@@ -134,7 +134,7 @@ class VendorHub_Connect {
 
 				'success' => false,
 
-				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 
 			);
 
@@ -144,7 +144,7 @@ class VendorHub_Connect {
 			self::log( 'Connect response missing storeId or apiToken (' . $code . '): ' . $raw );
 			return array(
 				'success' => false,
-				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 			);
 		}
 
@@ -183,7 +183,7 @@ class VendorHub_Connect {
 
 				'success' => false,
 
-				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 
 			);
 
@@ -207,7 +207,7 @@ class VendorHub_Connect {
 
 			'success'  => true,
 
-			'message'  => __( 'Successfully connected to VendorHub.', 'vendorhub-for-woocommerce' ),
+			'message'  => __( 'Successfully connected to MyVendorHub.', 'myvendorhub-for-woocommerce' ),
 
 			'store_id' => $store_id,
 
@@ -383,7 +383,7 @@ class VendorHub_Connect {
 		$state = sanitize_text_field( $state );
 
 		if ( empty( $state ) ) {
-			return true;
+			return false;
 		}
 
 		$stored = get_transient( self::connect_state_transient_key() );
@@ -447,7 +447,7 @@ class VendorHub_Connect {
 			self::log( 'OAuth exchange rejected: invalid or expired state.' );
 			return array(
 				'success' => false,
-				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 			);
 		}
 
@@ -477,7 +477,7 @@ class VendorHub_Connect {
 			self::log( 'OAuth token exchange failed: ' . $response->get_error_message() );
 			return array(
 				'success' => false,
-				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 			);
 		}
 
@@ -489,7 +489,7 @@ class VendorHub_Connect {
 			self::log( 'OAuth token exchange rejected (' . $http_code . '): ' . $raw );
 			return array(
 				'success' => false,
-				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 			);
 		}
 
@@ -507,7 +507,7 @@ class VendorHub_Connect {
 			self::log( 'OAuth token response missing storeId or apiToken.' );
 			return array(
 				'success' => false,
-				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connect request failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 			);
 		}
 
@@ -566,9 +566,9 @@ class VendorHub_Connect {
 
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- OAuth return uses signed server-side redirect.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Connect return uses CSRF state transient validated below.
 
-		if ( ! isset( $_GET['page'], $_GET['vendorhub_store_id'], $_GET['vendorhub_api_token'] ) ) {
+		if ( ! isset( $_GET['page'], $_GET['vendorhub_store_id'], $_GET['vendorhub_api_token'], $_GET['state'] ) ) {
 
 			return;
 
@@ -584,6 +584,20 @@ class VendorHub_Connect {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
+		$state = sanitize_text_field( wp_unslash( $_GET['state'] ) );
+
+		if ( false === self::consume_connect_state( $state ) ) {
+
+			self::log( 'Connect return rejected: invalid or expired state.' );
+
+			wp_safe_redirect( self::settings_url( 'connect_error' ) );
+
+			exit;
+
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
 		$store_id = sanitize_text_field( wp_unslash( $_GET['vendorhub_store_id'] ) );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -594,20 +608,6 @@ class VendorHub_Connect {
 		$plugin_token = isset( $_GET['vendorhub_plugin_token'] )
 			? sanitize_text_field( wp_unslash( $_GET['vendorhub_plugin_token'] ) )
 			: '';
-
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
-		$state = isset( $_GET['state'] ) ? sanitize_text_field( wp_unslash( $_GET['state'] ) ) : '';
-
-		if ( ! self::validate_connect_state( $state ) ) {
-
-			self::log( 'Connect return rejected: invalid or expired state.' );
-
-			wp_safe_redirect( self::settings_url( 'connect_error' ) );
-
-			exit;
-
-		}
 
 		self::save_credentials( $store_id, $api_token, $plugin_token );
 
@@ -642,7 +642,7 @@ class VendorHub_Connect {
 
 			'success' => true,
 
-			'message' => __( 'Disconnected from VendorHub.', 'vendorhub-for-woocommerce' ),
+			'message' => __( 'Disconnected from MyVendorHub.', 'myvendorhub-for-woocommerce' ),
 
 		);
 	}
@@ -675,7 +675,7 @@ class VendorHub_Connect {
 
 				'success' => false,
 
-				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 
 			);
 
@@ -712,7 +712,7 @@ class VendorHub_Connect {
 
 				'success' => false,
 
-				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 
 			);
 
@@ -728,7 +728,7 @@ class VendorHub_Connect {
 
 				'success' => false,
 
-				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 
 			);
 
@@ -740,7 +740,7 @@ class VendorHub_Connect {
 
 				'success' => true,
 
-				'message' => __( 'Connection test successful.', 'vendorhub-for-woocommerce' ),
+				'message' => __( 'Connection test successful.', 'myvendorhub-for-woocommerce' ),
 
 			);
 
@@ -754,7 +754,7 @@ class VendorHub_Connect {
 
 			'success' => false,
 
-			'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'vendorhub-for-woocommerce' ),
+			'message' => __( 'Connection test failed. See WooCommerce → Status → Logs (source: vendorhub).', 'myvendorhub-for-woocommerce' ),
 
 		);
 	}

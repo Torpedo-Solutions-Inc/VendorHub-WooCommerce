@@ -1,4 +1,4 @@
-=== VendorHub for WooCommerce ===
+=== MyVendorHub for WooCommerce ===
 
 Contributors: myvendorhub
 
@@ -10,7 +10,7 @@ Tested up to: 7.0
 
 Requires PHP: 7.4
 
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 
 License: GPLv2 or later
 
@@ -22,7 +22,7 @@ WC tested up to: 9.6
 
 
 
-Connect WooCommerce to VendorHub for multi-vendor order routing and fulfillment updates.
+Connect WooCommerce to MyVendorHub for multi-vendor order routing and fulfillment updates.
 
 
 
@@ -30,7 +30,7 @@ Connect WooCommerce to VendorHub for multi-vendor order routing and fulfillment 
 
 
 
-VendorHub for WooCommerce forwards new orders to [VendorHub](https://www.myvendorhub.com) and receives vendor responses (status, notes, tracking) back on your store.
+MyVendorHub for WooCommerce forwards new orders to [MyVendorHub](https://www.myvendorhub.com) and receives vendor responses (status, notes, tracking) back on your store.
 
 
 
@@ -38,9 +38,9 @@ VendorHub for WooCommerce forwards new orders to [VendorHub](https://www.myvendo
 
 
 
-* Redirect connect to VendorHub (no embedded secrets — WordPress.org ready)
+* Redirect connect to MyVendorHub (no embedded secrets — WordPress.org ready)
 
-* Open VendorHub from wp-admin after connect (signed SSO launch — no re-login)
+* Open MyVendorHub from wp-admin after connect (signed SSO launch — no re-login)
 
 * Permissions disclosure onboarding before external redirect
 
@@ -48,17 +48,17 @@ VendorHub for WooCommerce forwards new orders to [VendorHub](https://www.myvendo
 
 * Automatic order forwarding on checkout
 
-* Secure REST callback for VendorHub outbound updates
+* Secure REST callback for MyVendorHub outbound updates
 
 * HMAC signature verification on all callbacks
 
-* WooCommerce → Settings → VendorHub admin page
+* WooCommerce → Settings → MyVendorHub admin page
 
 * HPOS (High-Performance Order Storage) compatible
 
 
 
-Merchants manage vendors, rules, and responses in the **VendorHub web dashboard** — not inside WordPress.
+Merchants manage vendors, rules, and responses in the **MyVendorHub web dashboard** — not inside WordPress.
 
 
 
@@ -66,7 +66,7 @@ Merchants manage vendors, rules, and responses in the **VendorHub web dashboard*
 
 
 
-This plugin connects to VendorHub API hosts over HTTPS (default: `https://www.myvendorhub.com`). Data transmitted:
+This plugin connects to MyVendorHub API hosts over HTTPS (default: `https://www.myvendorhub.com`). Data transmitted:
 
 
 
@@ -74,11 +74,11 @@ This plugin connects to VendorHub API hosts over HTTPS (default: `https://www.my
 
 * **Order sync** — order number, line items, SKUs, vendor names, shipping address, customer email
 
-* **Inbound callbacks** — VendorHub POSTs status, notes, and tracking to your WordPress site
+* **Inbound callbacks** — MyVendorHub POSTs status, notes, and tracking to your WordPress site
 
 
 
-No VendorHub admin passwords are stored. See [VendorHub Privacy Policy](https://www.myvendorhub.com/privacy).
+No MyVendorHub admin passwords are stored. See [MyVendorHub Privacy Policy](https://www.myvendorhub.com/privacy).
 
 
 
@@ -86,15 +86,15 @@ No VendorHub admin passwords are stored. See [VendorHub Privacy Policy](https://
 
 
 
-1. Install from **Plugins → Add New** and search for "VendorHub for WooCommerce", **or** upload the plugin ZIP.
+1. Install from **Plugins → Add New** and search for "MyVendorHub for WooCommerce", **or** upload the plugin ZIP.
 
-2. Activate **VendorHub for WooCommerce** (requires WooCommerce 6.0+).
+2. Activate **MyVendorHub for WooCommerce** (requires WooCommerce 6.0+).
 
-3. You are redirected once to **WooCommerce → Settings → VendorHub** to review permissions.
+3. You are redirected once to **WooCommerce → Settings → MyVendorHub** to review permissions.
 
-4. Check the permissions disclosure, then click **Connect to VendorHub** and sign in on VendorHub (redirect flow), **or** use **Advanced → Manual connection** to paste Store ID + API token from VendorHub → Settings.
+4. Check the permissions disclosure, then click **Connect to MyVendorHub** and sign in on MyVendorHub (redirect flow), **or** use **Advanced → Manual connection** to paste Store ID + API token from MyVendorHub → Settings.
 
-5. After connecting, click **Open VendorHub** on the settings page to return to your dashboard without signing in again, and place a test order — it should appear in VendorHub within seconds.
+5. After connecting, click **Open MyVendorHub** on the settings page to return to your dashboard without signing in again, and place a test order — it should appear in MyVendorHub within seconds.
 
 Integrators: see `docs/PLATFORM_INTEGRATION.md` → **SSO launch (return visits — plugin v2+)** for the signing contract.
 
@@ -108,7 +108,7 @@ Integrators: see `docs/PLATFORM_INTEGRATION.md` → **SSO launch (return visits 
 
 
 
-No VendorHub secrets are embedded in the plugin. Review the permissions checklist, accept the disclosure, then click **Connect to VendorHub** to open VendorHub with your `siteUrl`, a per-site `pluginToken`, and a CSRF `state` parameter. After you sign in, VendorHub returns `storeId` and `apiToken` to this settings page.
+No MyVendorHub secrets are embedded in the plugin. Review the permissions checklist, accept the disclosure, then click **Connect to MyVendorHub** to open MyVendorHub with your `siteUrl`, a per-site `pluginToken`, and a CSRF `state` parameter. After you sign in, MyVendorHub returns `storeId` and `apiToken` to this settings page.
 
 
 
@@ -116,7 +116,7 @@ No VendorHub secrets are embedded in the plugin. Review the permissions checklis
 
 
 
-Create or open your WooCommerce store in VendorHub, then copy **Store ID** and **API token** from VendorHub → Settings → API access. Paste them under **Advanced → Manual connection** in WooCommerce → Settings → VendorHub.
+Create or open your WooCommerce store in MyVendorHub, then copy **Store ID** and **API token** from MyVendorHub → Settings → API access. Paste them under **Advanced → Manual connection** in WooCommerce → Settings → MyVendorHub.
 
 
 
@@ -124,7 +124,7 @@ Create or open your WooCommerce store in VendorHub, then copy **Store ID** and *
 
 
 
-Define `VENDORHUB_WC_CONNECT_SECRET` in `wp-config.php` matching your VendorHub server env. A **Direct connect (dev)** button appears for HMAC-signed registration.
+Define `VENDORHUB_WC_CONNECT_SECRET` in `wp-config.php` matching your MyVendorHub server env. A **Direct connect (dev)** button appears for HMAC-signed registration.
 
 
 
@@ -136,11 +136,11 @@ Define `VENDORHUB_WC_CONNECT_SECRET` in `wp-config.php` matching your VendorHub 
 
 
 
-In the VendorHub web dashboard at https://www.myvendorhub.com (or your self-hosted URL). This plugin only forwards orders and applies vendor responses.
+In the MyVendorHub web dashboard at https://www.myvendorhub.com (or your self-hosted URL). This plugin only forwards orders and applies vendor responses.
 
 
 
-= Does this plugin require a VendorHub account? =
+= Does this plugin require a MyVendorHub account? =
 
 
 
@@ -152,11 +152,11 @@ Yes, to forward orders. Without credentials the plugin shows "Not connected" and
 
 
 
-No. REST keys are optional and configured in the VendorHub web dashboard for advanced dashboard reads. Order ingest works through this plugin alone.
+No. REST keys are optional and configured in the MyVendorHub web dashboard for advanced dashboard reads. Order ingest works through this plugin alone.
 
 
 
-= Does this plugin store VendorHub admin passwords? =
+= Does this plugin store MyVendorHub admin passwords? =
 
 
 
@@ -172,11 +172,11 @@ Line-item vendor is read from product/line meta keys: `_vendor`, `vendor`, `_wcv
 
 
 
-= What personal data is sent to VendorHub? =
+= What personal data is sent to MyVendorHub? =
 
 
 
-Order and fulfillment data including customer name, shipping address, and phone when present on the order. VendorHub does not sell personal data. See https://www.myvendorhub.com/privacy.
+Order and fulfillment data including customer name, shipping address, and phone when present on the order. MyVendorHub does not sell personal data. See https://www.myvendorhub.com/privacy.
 
 
 
@@ -184,17 +184,24 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 
 
-1. WooCommerce → Settings → VendorHub onboarding (permissions disclosure)
+1. WooCommerce → Settings → MyVendorHub onboarding (permissions disclosure)
 
-2. Connected state with Open VendorHub (SSO launch)
+2. Connected state with Open MyVendorHub (SSO launch)
 
 3. Advanced manual Store ID and API token entry
 
-4. Order note applied after vendor accept in VendorHub
+4. Order note applied after vendor accept in MyVendorHub
 
 
 
 == Changelog ==
+
+
+
+= 1.1.2 =
+
+* Rename plugin to **MyVendorHub for WooCommerce** (distinctive branding for WordPress.org).
+* Require valid connect `state` on redirect return — reject missing or invalid CSRF state before saving credentials.
 
 
 
@@ -207,7 +214,7 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 = 1.1.0 =
 
-* SSO launch — Open VendorHub from wp-admin without re-login.
+* SSO launch — Open MyVendorHub from wp-admin without re-login.
 * Configurable vendor meta key for multi-vendor plugins.
 * Onboarding UX and permissions disclosure improvements.
 * WordPress 7.0 compatibility.
@@ -225,9 +232,13 @@ Order and fulfillment data including customer name, shipping address, and phone 
 
 
 
-= 1.1.1 =
+= 1.1.2 =
 
-Fixes WordPress.org submission headers and text domain alignment.
+Security and branding update for WordPress.org review.
+
+
+
+= 1.1.1 =
 
 
 

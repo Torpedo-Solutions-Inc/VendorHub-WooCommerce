@@ -96,16 +96,16 @@ class VendorHub_REST {
 	public static function verify_request( $request ) {
 		$api_token = get_option( 'vendorhub_api_token', '' );
 		if ( empty( $api_token ) ) {
-			return new WP_Error( 'vendorhub_not_configured', __( 'VendorHub is not connected.', 'vendorhub-for-woocommerce' ), array( 'status' => 503 ) );
+			return new WP_Error( 'vendorhub_not_configured', __( 'MyVendorHub is not connected.', 'myvendorhub-for-woocommerce' ), array( 'status' => 503 ) );
 		}
 
 		$auth = $request->get_header( 'authorization' );
 		if ( empty( $auth ) || ! preg_match( '/^Bearer\s+(.+)$/i', $auth, $matches ) ) {
-			return new WP_Error( 'vendorhub_unauthorized', __( 'Missing authorization.', 'vendorhub-for-woocommerce' ), array( 'status' => 401 ) );
+			return new WP_Error( 'vendorhub_unauthorized', __( 'Missing authorization.', 'myvendorhub-for-woocommerce' ), array( 'status' => 401 ) );
 		}
 
 		if ( ! hash_equals( $api_token, trim( $matches[1] ) ) ) {
-			return new WP_Error( 'vendorhub_unauthorized', __( 'Invalid API token.', 'vendorhub-for-woocommerce' ), array( 'status' => 401 ) );
+			return new WP_Error( 'vendorhub_unauthorized', __( 'Invalid API token.', 'myvendorhub-for-woocommerce' ), array( 'status' => 401 ) );
 		}
 
 		$timestamp = $request->get_header( 'x-vendorhub-timestamp' );
@@ -113,11 +113,11 @@ class VendorHub_REST {
 		$raw_body  = $request->get_body();
 
 		if ( empty( $timestamp ) || empty( $signature ) ) {
-			return new WP_Error( 'vendorhub_bad_request', __( 'Missing signature headers.', 'vendorhub-for-woocommerce' ), array( 'status' => 400 ) );
+			return new WP_Error( 'vendorhub_bad_request', __( 'Missing signature headers.', 'myvendorhub-for-woocommerce' ), array( 'status' => 400 ) );
 		}
 
 		if ( ! VendorHub_HMAC::verify( $api_token, $timestamp, $raw_body, $signature ) ) {
-			return new WP_Error( 'vendorhub_invalid_signature', __( 'Invalid signature or timestamp.', 'vendorhub-for-woocommerce' ), array( 'status' => 401 ) );
+			return new WP_Error( 'vendorhub_invalid_signature', __( 'Invalid signature or timestamp.', 'myvendorhub-for-woocommerce' ), array( 'status' => 401 ) );
 		}
 
 		return true;
@@ -134,7 +134,7 @@ class VendorHub_REST {
 		$order    = wc_get_order( $order_id );
 
 		if ( ! $order ) {
-			return new WP_Error( 'vendorhub_order_not_found', __( 'Order not found.', 'vendorhub-for-woocommerce' ), array( 'status' => 404 ) );
+			return new WP_Error( 'vendorhub_order_not_found', __( 'Order not found.', 'myvendorhub-for-woocommerce' ), array( 'status' => 404 ) );
 		}
 
 		$params = $request->get_json_params();
@@ -147,7 +147,7 @@ class VendorHub_REST {
 		$tracking = isset( $params['tracking'] ) ? sanitize_text_field( $params['tracking'] ) : '';
 
 		if ( $status && self::is_valid_wc_status( $status ) ) {
-			$order->update_status( $status, __( 'Updated by VendorHub.', 'vendorhub-for-woocommerce' ), true );
+			$order->update_status( $status, __( 'Updated by MyVendorHub.', 'myvendorhub-for-woocommerce' ), true );
 		}
 
 		if ( $note ) {
@@ -193,7 +193,7 @@ class VendorHub_REST {
 		if ( ! is_array( $params ) || ! isset( $params['vendorMetaKey'] ) ) {
 			return new WP_Error(
 				'vendorhub_bad_request',
-				__( 'Missing vendorMetaKey.', 'vendorhub-for-woocommerce' ),
+				__( 'Missing vendorMetaKey.', 'myvendorhub-for-woocommerce' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -202,7 +202,7 @@ class VendorHub_REST {
 		if ( ! VendorHub_Vendor_Meta::set_vendor_meta_key( $key ) ) {
 			return new WP_Error(
 				'vendorhub_invalid_vendor_meta_key',
-				__( 'Invalid vendorMetaKey.', 'vendorhub-for-woocommerce' ),
+				__( 'Invalid vendorMetaKey.', 'myvendorhub-for-woocommerce' ),
 				array( 'status' => 400 )
 			);
 		}
@@ -248,7 +248,7 @@ class VendorHub_REST {
 		if ( ! VendorHub_Vendor_Meta::validate_vendor_meta_key( $meta_key ) ) {
 			return new WP_Error(
 				'vendorhub_invalid_vendor_meta_key',
-				__( 'Invalid metaKey.', 'vendorhub-for-woocommerce' ),
+				__( 'Invalid metaKey.', 'myvendorhub-for-woocommerce' ),
 				array( 'status' => 400 )
 			);
 		}

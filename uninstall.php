@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall VendorHub for WooCommerce.
+ * Uninstall MyVendorHub for WooCommerce.
  *
  * @package VendorHub_WooCommerce
  */
