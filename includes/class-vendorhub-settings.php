@@ -390,7 +390,6 @@ class VendorHub_Settings {
 	public static function admin_notices() {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 		if ( ! isset( $_GET['page'], $_GET['tab'] ) || 'wc-settings' !== $_GET['page'] || 'vendorhub' !== $_GET['tab'] ) {
 
 			return;
@@ -398,7 +397,6 @@ class VendorHub_Settings {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 		$status = isset( $_GET['vendorhub_status'] ) ? sanitize_key( wp_unslash( $_GET['vendorhub_status'] ) ) : '';
 
 		if ( empty( $status ) ) {

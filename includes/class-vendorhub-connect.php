@@ -567,7 +567,6 @@ class VendorHub_Connect {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Connect return uses CSRF state transient validated below.
-
 		if ( ! isset( $_GET['page'], $_GET['vendorhub_store_id'], $_GET['vendorhub_api_token'], $_GET['state'] ) ) {
 
 			return;
@@ -575,7 +574,6 @@ class VendorHub_Connect {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 		if ( 'wc-settings' !== $_GET['page'] ) {
 
 			return;
@@ -583,7 +581,6 @@ class VendorHub_Connect {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 		$state = sanitize_text_field( wp_unslash( $_GET['state'] ) );
 
 		if ( false === self::consume_connect_state( $state ) ) {
@@ -597,11 +594,9 @@ class VendorHub_Connect {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 		$store_id = sanitize_text_field( wp_unslash( $_GET['vendorhub_store_id'] ) );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-
 		$api_token = sanitize_text_field( wp_unslash( $_GET['vendorhub_api_token'] ) );
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
