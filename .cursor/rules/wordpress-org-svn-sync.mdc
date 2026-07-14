@@ -1,0 +1,48 @@
+---
+description: Sync plugin ship files to WordPress.org SVN trunk after code changes
+globs: vendorhub.php,readme.txt,uninstall.php,includes/**,admin/**,languages/**,assets/**
+alwaysApply: false
+---
+
+# WordPress.org SVN trunk sync
+
+Development happens in this Git repo (`vendorhub-woocommerce`). Publishing uses a sibling SVN working copy.
+
+| Role | Path |
+|------|------|
+| Dev (Git) | `D:\Dev\Torpedo Solutions Inc\vendorhub-woocommerce` |
+| SVN publish | `D:\Dev\Torpedo Solutions Inc\vendorhub-for-woocommerce-svn` |
+| SVN URL | `https://plugins.svn.wordpress.org/myvendorhub-for-woocommerce` |
+
+## After changing plugin ship files
+
+When you modify any file that ships in the plugin ZIP, sync to SVN trunk before finishing:
+
+```powershell
+.\scripts\sync-svn-trunk.ps1
+```
+
+If you changed listing images in `assets/*.png`, also sync assets:
+
+```powershell
+.\scripts\sync-svn-trunk.ps1 -SyncAssets
+```
+
+### Files that sync to `trunk/`
+
+- `vendorhub.php`, `readme.txt`, `uninstall.php`
+- `includes/`, `admin/`, `languages/`
+
+Do **not** copy dev-only paths: `tests/`, `scripts/`, `docs/`, `.github/`, `composer.*`, `*.zip`.
+
+### Files that sync to `assets/` (not trunk)
+
+- `assets/*.png` only (banners, icons, screenshots)
+
+## Do not auto-commit
+
+Sync copies files locally only. SVN commit and tagging are release actions — use the `wordpress-org-svn-release` skill when the user wants to publish.
+
+## Version rule
+
+Before any release, `vendorhub.php` `Version:` must match `readme.txt` `Stable tag:`.
