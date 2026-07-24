@@ -3,7 +3,7 @@
  * Plugin Name:       MyVendorHub for WooCommerce
  * Plugin URI:        https://github.com/Torpedo-Solutions-Inc/VendorHub-WooCommerce
  * Description:       Automate supplier notifications, Accept/Reject tracking, and multi-vendor fulfillment for your WooCommerce store.
- * Version:           1.1.2
+ * Version:           1.1.3
  * Requires at least: 5.8
  * Tested up to:      7.0
  * Requires PHP:      7.4
@@ -21,7 +21,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'VENDORHUB_WC_VERSION', '1.1.2' );
+define( 'VENDORHUB_WC_VERSION', '1.1.3' );
 define( 'VENDORHUB_WC_PLUGIN_FILE', __FILE__ );
 define( 'VENDORHUB_WC_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'VENDORHUB_WC_DEFAULT_API_BASE', 'https://www.myvendorhub.com' );

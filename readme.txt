@@ -5,7 +5,7 @@ Tags: woocommerce, dropshipping, fulfillment, vendors, suppliers
 Requires at least: 5.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -136,6 +136,11 @@ Yes. The plugin declares compatibility with WooCommerce High-Performance Order S
 
 == Changelog ==
 
+= 1.1.3 =
+
+* Refresh WordPress.org listing copy (features, connect, external services, FAQ).
+* Fix short description so WooCommerce version headers are not shown in the plugin excerpt.
+
 = 1.1.2 =
 
 * Rename plugin to **MyVendorHub for WooCommerce** (distinctive branding for WordPress.org).
@@ -159,6 +164,10 @@ Yes. The plugin declares compatibility with WooCommerce High-Performance Order S
 * Initial release: redirect connect, manual token paste, order ingest, REST callback, settings UI, privacy disclosures, WordPress.org readiness (Phase 7F).
 
 == Upgrade Notice ==
+
+= 1.1.3 =
+
+Listing and documentation update for the WordPress.org directory.
 
 = 1.1.2 =
 

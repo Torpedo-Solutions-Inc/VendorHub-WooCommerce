@@ -1,0 +1,260 @@
+# Translation of Plugins - MyVendorHub for WooCommerce - Stable Readme (latest release) in Hebrew
+# This file is distributed under the same license as the Plugins - MyVendorHub for WooCommerce - Stable Readme (latest release) package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2026-07-24 11:20+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: VendorHub\n"
+"Language: he_IL\n"
+"Project-Id-Version: Plugins - MyVendorHub for WooCommerce - Stable Readme (latest release)\n"
+
+#. Short description.
+#, gp-priority: high
+msgid "WC requires at least: 6.0 WC tested up to: 9.6 Connect WooCommerce to MyVendorHub for multi-vendor order routing and fulfillment updates."
+msgstr "חברו את WooCommerce ל־MyVendorHub לניתוב הזמנות מרובות-ספקים ועדכוני מימוש."
+
+#. Plugin name.
+#, gp-priority: high
+msgid "MyVendorHub for WooCommerce"
+msgstr "MyVendorHub for WooCommerce"
+
+#. Found in faq paragraph.
+msgid "Order and fulfillment data including customer name, shipping address, and phone when present on the order. MyVendorHub does not sell personal data. See https://www.myvendorhub.com/privacy."
+msgstr "נתוני הזמנה ומימוש כולל שם לקוח, כתובת משלוח וטלפון כשהם קיימים בהזמנה. MyVendorHub אינה מוכרת נתונים אישיים. ראו https://www.myvendorhub.com/privacy."
+
+#. Found in faq paragraph.
+msgid "Line-item vendor is read from product/line meta keys: <code>_vendor</code>, <code>vendor</code>, <code>_wcv_vendor</code>, <code>_dokan_vendor_id</code>."
+msgstr "שם הספק נקרא ממפתחות מטה של מוצר / פריט שורה: <code>_vendor</code>, <code>vendor</code>, <code>_wcv_vendor</code>, <code>_dokan_vendor_id</code>."
+
+#. Found in faq paragraph.
+msgid "No. Only per-store <code>storeId</code> and <code>apiToken</code> from the connect handshake are stored locally."
+msgstr "לא. נשמרים מקומית רק ה־<code>storeId</code> וה־<code>apiToken</code> לכל חנות מתהליך החיבור."
+
+#. Found in faq paragraph.
+msgid "No. REST keys are optional and configured in the MyVendorHub web dashboard for advanced dashboard reads. Order ingest works through this plugin alone."
+msgstr "לא. מפתחות REST אופציונליים ומוגדרים בלוח הבקרה של MyVendorHub לקריאות דשבורד מתקדמות. קליטת הזמנות עובדת דרך התוסף בלבד."
+
+#. Found in faq paragraph.
+msgid "Yes, to forward orders. Without credentials the plugin shows \"Not connected\" and does not transmit data."
+msgstr "כן, כדי להעביר הזמנות. בלי פרטי התחברות התוסף מציג \"Not connected\" ואינו מעביר נתונים."
+
+#. Found in faq paragraph.
+msgid "In the MyVendorHub web dashboard at https://www.myvendorhub.com (or your self-hosted URL). This plugin only forwards orders and applies vendor responses."
+msgstr "בלוח הבקרה של MyVendorHub בכתובת https://www.myvendorhub.com (או בכתובת העצמית שלכם). התוסף רק מעביר הזמנות ומחיל תגובות ספקים."
+
+#. Found in faq header.
+msgid "What personal data is sent to MyVendorHub?"
+msgstr "אילו נתונים אישיים נשלחים ל־MyVendorHub?"
+
+#. Found in faq header.
+msgid "What WooCommerce vendor plugins are supported?"
+msgstr "אילו תוספי ספקים של WooCommerce נתמכים?"
+
+#. Found in faq header.
+msgid "Does this plugin store MyVendorHub admin passwords?"
+msgstr "האם התוסף שומר סיסמאות מנהל של MyVendorHub?"
+
+#. Found in faq header.
+msgid "Are WooCommerce REST API keys required?"
+msgstr "האם נדרשים מפתחות REST API של WooCommerce?"
+
+#. Found in faq header.
+msgid "Does this plugin require a MyVendorHub account?"
+msgstr "האם התוסף דורש חשבון MyVendorHub?"
+
+#. Found in faq header.
+msgid "Where do I manage vendors?"
+msgstr "איפה מנהלים ספקים?"
+
+#. Found in installation paragraph.
+msgid "Integrators: see <code>docs/PLATFORM_INTEGRATION.md</code> → <strong>SSO launch (return visits — plugin v2+)</strong> for the signing contract."
+msgstr "למפתחים: ראו <code>docs/PLATFORM_INTEGRATION.md</code> ← <strong>SSO launch (return visits — plugin v2+)</strong> לחוזה החתימה."
+
+#. Found in installation paragraph.
+msgid "After connecting, click <strong>Open MyVendorHub</strong> on the settings page to return to your dashboard without signing in again, and place a test order — it should appear in MyVendorHub within seconds."
+msgstr "אחרי החיבור, לחצו על <strong>Open MyVendorHub</strong> בעמוד ההגדרות כדי לחזור ללוח הבקרה בלי להתחבר מחדש, ובצעו הזמנת בדיקה — היא אמורה להופיע ב־MyVendorHub תוך שניות."
+
+#. Found in installation paragraph.
+msgid "Check the permissions disclosure, then click <strong>Connect to MyVendorHub</strong> and sign in on MyVendorHub (redirect flow), <strong>or</strong> use <strong>Advanced → Manual connection</strong> to paste Store ID + API token from MyVendorHub → Settings."
+msgstr "עברו על גילוי ההרשאות, ואז לחצו על <strong>Connect to MyVendorHub</strong> והתחברו ב־MyVendorHub (זרימת הפניה), <strong>או</strong> השתמשו ב־<strong>Advanced ← Manual connection</strong> כדי להדביק Store ID + API token מ־MyVendorHub ← הגדרות."
+
+#. Found in installation paragraph.
+msgid "You are redirected once to <strong>WooCommerce → Settings → MyVendorHub</strong> to review permissions."
+msgstr "תועברו פעם אחת אל <strong>WooCommerce ← הגדרות ← MyVendorHub</strong> כדי לעבור על ההרשאות."
+
+#. Found in installation paragraph.
+msgid "Activate <strong>MyVendorHub for WooCommerce</strong> (requires WooCommerce 6.0+)."
+msgstr "הפעילו את <strong>MyVendorHub for WooCommerce</strong> (נדרש WooCommerce 6.0 ומעלה)."
+
+#. Found in installation paragraph.
+msgid "Install from <strong>Plugins → Add New</strong> and search for \"MyVendorHub for WooCommerce\", <strong>or</strong> upload the plugin ZIP."
+msgstr "התקינו מ־<strong>תוספים ← הוספת תוסף חדש</strong> וחפשו \"MyVendorHub for WooCommerce\", <strong>או</strong> העלו את קובץ ה־ZIP של התוסף."
+
+#. Found in description paragraph.
+msgid "Define <code>VENDORHUB_WC_CONNECT_SECRET</code> in <code>wp-config.php</code> matching your MyVendorHub server env. A <strong>Direct connect (dev)</strong> button appears for HMAC-signed registration."
+msgstr "הגדירו את <code>VENDORHUB_WC_CONNECT_SECRET</code> ב־<code>wp-config.php</code> בהתאם לסביבת שרת MyVendorHub שלכם. יופיע כפתור <strong>Direct connect (dev)</strong> לרישום חתום ב־HMAC."
+
+#. Found in description paragraph.
+msgid "<strong>Direct connect (self-hosted development only)</strong>"
+msgstr "<strong>חיבור ישיר (פיתוח בסביבה עצמית בלבד)</strong>"
+
+#. Found in description paragraph.
+msgid "Create or open your WooCommerce store in MyVendorHub, then copy <strong>Store ID</strong> and <strong>API token</strong> from MyVendorHub → Settings → API access. Paste them under <strong>Advanced → Manual connection</strong> in WooCommerce → Settings → MyVendorHub."
+msgstr "צרו או פתחו את חנות ה־WooCommerce ב־MyVendorHub, ואז העתיקו את ה־<strong>Store ID</strong> ואת ה־<strong>API token</strong> מ־MyVendorHub ← הגדרות ← API access. הדביקו אותם תחת <strong>Advanced ← Manual connection</strong> ב־WooCommerce ← הגדרות ← MyVendorHub."
+
+#. Found in description paragraph.
+msgid "<strong>Manual token paste</strong>"
+msgstr "<strong>הדבקת טוקן ידנית</strong>"
+
+#. Found in description paragraph.
+msgid "No MyVendorHub secrets are embedded in the plugin. Review the permissions checklist, accept the disclosure, then click <strong>Connect to MyVendorHub</strong> to open MyVendorHub with your <code>siteUrl</code>, a per-site <code>pluginToken</code>, and a CSRF <code>state</code> parameter. After you sign in, MyVendorHub returns <code>storeId</code> and <code>apiToken</code> to this settings page."
+msgstr "אין סודות של MyVendorHub מוטמעים בתוסף. עברו על רשימת ההרשאות, אשרו את הגילוי, ואז לחצו על <strong>Connect to MyVendorHub</strong> כדי לפתוח את MyVendorHub עם ה־<code>siteUrl</code>, <code>pluginToken</code> לכל אתר, ופרמטר CSRF <code>state</code>. אחרי ההתחברות, MyVendorHub מחזיר <code>storeId</code> ו־<code>apiToken</code> לעמוד ההגדרות הזה."
+
+#. Found in description paragraph.
+msgid "<strong>Redirect flow (recommended — WordPress.org / SaaS)</strong>"
+msgstr "<strong>זרימת הפניה (מומלץ — WordPress.org / SaaS)</strong>"
+
+#. Found in description paragraph.
+msgid "No MyVendorHub admin passwords are stored. See <a href=\"https://www.myvendorhub.com/privacy\">MyVendorHub Privacy Policy</a>."
+msgstr "סיסמאות מנהל של MyVendorHub אינן נשמרות. ראו <a href=\"https://www.myvendorhub.com/privacy\">מדיניות הפרטיות של MyVendorHub</a>."
+
+#. Found in description paragraph.
+msgid "<strong>Inbound callbacks</strong> — MyVendorHub POSTs status, notes, and tracking to your WordPress site"
+msgstr "<strong>קריאות חוזרות נכנסות</strong> — MyVendorHub שולח (POST) סטטוס, הערות ומעקב לאתר ה־WordPress שלכם"
+
+#. Found in description paragraph.
+msgid "<strong>Order sync</strong> — order number, line items, SKUs, vendor names, shipping address, customer email"
+msgstr "<strong>סנכרון הזמנות</strong> — מספר הזמנה, פריטי שורה, מק״טים, שמות ספקים, כתובת משלוח ואימייל לקוח"
+
+#. Found in description paragraph.
+msgid "<strong>Connect</strong> — site URL, store display name, per-site plugin token"
+msgstr "<strong>חיבור</strong> — כתובת האתר, שם התצוגה של החנות, וטוקן תוסף לכל אתר"
+
+#. Found in description paragraph.
+msgid "This plugin connects to MyVendorHub API hosts over HTTPS (default: <code>https://www.myvendorhub.com</code>). Data transmitted:"
+msgstr "התוסף מתחבר לשרתי ה־API של MyVendorHub דרך HTTPS (ברירת מחדל: <code>https://www.myvendorhub.com</code>). נתונים שמועברים:"
+
+#. Found in description paragraph.
+msgid "Merchants manage vendors, rules, and responses in the <strong>MyVendorHub web dashboard</strong> — not inside WordPress."
+msgstr "סוחרים מנהלים ספקים, כללים ותגובות ב<strong>לוח הבקרה של MyVendorHub באינטרנט</strong> — לא בתוך WordPress."
+
+#. Found in description paragraph.
+msgid "HPOS (High-Performance Order Storage) compatible"
+msgstr "תואם HPOS (אחסון הזמנות בעל ביצועים גבוהים)"
+
+#. Found in description paragraph.
+msgid "WooCommerce → Settings → MyVendorHub admin page"
+msgstr "עמוד ניהול WooCommerce ← הגדרות ← MyVendorHub"
+
+#. Found in description paragraph.
+msgid "HMAC signature verification on all callbacks"
+msgstr "אימות חתימת HMAC בכל הקריאות החוזרות"
+
+#. Found in description paragraph.
+msgid "Secure REST callback for MyVendorHub outbound updates"
+msgstr "קריאת REST מאובטחת לעדכונים יוצאים מ־MyVendorHub"
+
+#. Found in description paragraph.
+msgid "Automatic order forwarding on checkout"
+msgstr "העברת הזמנות אוטומטית בקופה"
+
+#. Found in description paragraph.
+msgid "Manual Store ID + API token paste (Advanced)"
+msgstr "הדבקה ידנית של Store ID + API token (מתקדם)"
+
+#. Found in description paragraph.
+msgid "Permissions disclosure onboarding before external redirect"
+msgstr "גילוי הרשאות בקליטה לפני הפניה חיצונית"
+
+#. Found in description paragraph.
+msgid "Open MyVendorHub from wp-admin after connect (signed SSO launch — no re-login)"
+msgstr "פתיחת MyVendorHub מ־wp-admin אחרי החיבור (כניסת SSO חתומה — בלי התחברות מחדש)"
+
+#. Found in description paragraph.
+msgid "Redirect connect to MyVendorHub (no embedded secrets — WordPress.org ready)"
+msgstr "חיבור בהפניה ל־MyVendorHub (ללא סודות מוטמעים — מוכן ל־WordPress.org)"
+
+#. Found in description paragraph.
+msgid "<strong>Features:</strong>"
+msgstr "<strong>תכונות:</strong>"
+
+#. Found in description paragraph.
+msgid "MyVendorHub for WooCommerce forwards new orders to <a href=\"https://www.myvendorhub.com\">MyVendorHub</a> and receives vendor responses (status, notes, tracking) back on your store."
+msgstr "MyVendorHub for WooCommerce מעביר הזמנות חדשות אל <a href=\"https://www.myvendorhub.com\">MyVendorHub</a> ומקבל בחזרה לחנות תגובות ספקים (סטטוס, הערות, מעקב)."
+
+#. Found in description header.
+msgid "Connect flows"
+msgstr "זרימות חיבור"
+
+#. Found in description header.
+msgid "External services"
+msgstr "שירותים חיצוניים"
+
+#. Screenshot description.
+msgid "<p>Order note applied after vendor accept in MyVendorHub</p>"
+msgstr "<p>הערת הזמנה שנוספה אחרי אישור ספק ב־MyVendorHub</p>"
+
+#. Screenshot description.
+msgid "<p>Advanced manual Store ID and API token entry</p>"
+msgstr "<p>הזנה ידנית מתקדמת של Store ID ו־API token</p>"
+
+#. Screenshot description.
+msgid "<p>Connected state with Open MyVendorHub (SSO launch)</p>"
+msgstr "<p>מצב מחובר עם Open MyVendorHub (כניסת SSO)</p>"
+
+#. Screenshot description.
+msgid "<p>WooCommerce → Settings → MyVendorHub onboarding (permissions disclosure)</p>"
+msgstr "<p>WooCommerce ← הגדרות ← MyVendorHub — קליטה (גילוי הרשאות)</p>"
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Initial release: redirect connect, manual token paste, order ingest, REST callback, settings UI, privacy disclosures, WordPress.org readiness (Phase 7F)."
+msgstr "גרסה ראשונה: חיבור בהפניה, הדבקת טוקן ידנית, קליטת הזמנות, קריאת REST חוזרת, ממשק הגדרות, גילויי פרטיות, מוכנות ל־WordPress.org (שלב 7F)."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "PHPCS, Plugin Check CI, and E2E verification script."
+msgstr "PHPCS, Plugin Check CI, וסקריפט אימות E2E."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "WordPress 7.0 compatibility."
+msgstr "תאימות ל־WordPress 7.0."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Onboarding UX and permissions disclosure improvements."
+msgstr "שיפורי חוויית קליטה וגילוי הרשאות."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Configurable vendor meta key for multi-vendor plugins."
+msgstr "מפתח מטה של ספק ניתן להגדרה לתוספים מרובי-ספקים."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "SSO launch — Open MyVendorHub from wp-admin without re-login."
+msgstr "הפעלת SSO — פתיחת MyVendorHub מ־wp-admin בלי התחברות מחדש."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Fix Plugin URI / Author URI headers for directory submission."
+msgstr "תיקון כותרות Plugin URI / Author URI להגשה לתיקייה."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Align text domain with WordPress.org slug (<code>vendorhub-for-woocommerce</code>)."
+msgstr "התאמת תחום הטקסט לסלאג של WordPress.org (<code>vendorhub-for-woocommerce</code>)."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Require valid connect <code>state</code> on redirect return — reject missing or invalid CSRF state before saving credentials."
+msgstr "דרישת <code>state</code> חיבור תקין בחזרה מהפניה — דחיית מצב CSRF חסר או לא תקין לפני שמירת פרטי גישה."
+
+#. Found in changelog list item.
+#, gp-priority: low
+msgid "Rename plugin to <strong>MyVendorHub for WooCommerce</strong> (distinctive branding for WordPress.org)."
+msgstr "שינוי שם התוסף ל־<strong>MyVendorHub for WooCommerce</strong> (מיתוג ייחודי ל־WordPress.org)."
