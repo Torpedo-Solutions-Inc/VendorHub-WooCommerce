@@ -19,13 +19,14 @@ GET {VENDORHUB_BASE}/connect/woocommerce?siteUrl={url}&pluginToken={token}&retur
 ```
 
 - Backend validates `returnUrl` (same hostname as `siteUrl`, path includes `admin.php`).
-- **Platform must echo `state` unchanged** on the return redirect. The plugin validates it when present; omitting `state` skips CSRF validation (legacy compat only — not recommended).
-- After merchant login, backend redirects to:
+- **Platform must echo `state` unchanged** on the return redirect (top-level connect `state` and/or `state` already inside `returnUrl`). The plugin **requires** `state` — without it credentials are rejected (WordPress.org CSRF requirement).
+- After merchant approve, backend redirects to:
 
 ```
 {returnUrl}?vendorhub_store_id={storeId}&vendorhub_api_token={apiToken}&state={state}
 ```
 
+- Do **not** offer “Open dashboard” as an alternative to Approve — that skips the WordPress credential handoff.
 - Plugin implementation: `VendorHub_Connect::get_redirect_url()`, `maybe_handle_redirect_return()`, `validate_connect_state()`.
 
 ### OAuth flow (Phase 2 — when platform ships)

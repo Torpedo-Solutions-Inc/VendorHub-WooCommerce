@@ -27,3 +27,12 @@ $options = array(
 foreach ( $options as $option ) {
 	delete_option( $option );
 }
+
+global $wpdb;
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Uninstall cleanup of per-user connect CSRF options.
+$wpdb->query(
+	$wpdb->prepare(
+		"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",
+		$wpdb->esc_like( 'vendorhub_connect_state_' ) . '%'
+	)
+);

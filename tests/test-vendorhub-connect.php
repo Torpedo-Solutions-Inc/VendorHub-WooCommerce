@@ -70,10 +70,10 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 	 */
 	public function test_maybe_handle_redirect_return_without_vendorhub_tab() {
 		$_GET = array(
-			'page'                 => 'wc-settings',
-			'vendorhub_store_id'   => 'wc-example.com',
-			'vendorhub_api_token'  => str_repeat( 'a', 64 ),
-			'state'                => 'valid-state-nonce',
+			'page'                => 'wc-settings',
+			'vendorhub_store_id'  => 'wc-example.com',
+			'vendorhub_api_token' => str_repeat( 'a', 64 ),
+			'state'               => 'valid-state-nonce',
 		);
 
 		Functions\when( 'is_admin' )->justReturn( true );
@@ -81,20 +81,22 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 		Functions\when( 'sanitize_text_field' )->returnArg( 1 );
 		Functions\when( 'wp_unslash' )->returnArg( 1 );
 		Functions\when( 'update_option' )->justReturn( true );
+		Functions\when( 'delete_option' )->justReturn( true );
+		Functions\when( 'delete_transient' )->justReturn( true );
 		Functions\when( 'get_option' )->alias(
 			function ( $key ) {
+				if ( 'vendorhub_connect_state_1' === $key ) {
+					return array(
+						'state'      => 'valid-state-nonce',
+						'expires_at' => time() + 900,
+					);
+				}
 				if ( 'vendorhub_plugin_token' === $key ) {
 					return 'existing-plugin-token';
 				}
 				return '';
 			}
 		);
-		Functions\when( 'get_transient' )->justReturn(
-			array(
-				'state' => 'valid-state-nonce',
-			)
-		);
-		Functions\when( 'delete_transient' )->justReturn( true );
 		Functions\when( 'wp_safe_redirect' )->alias(
 			function ( $url ) {
 				throw new RedirectException( $url );
@@ -114,7 +116,7 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 	}
 
 	/**
-	 * Redirect return handler rejects missing connect state.
+	 * Redirect return with credentials but missing state redirects to connect_error.
 	 */
 	public function test_maybe_handle_redirect_return_rejects_missing_state() {
 		$_GET = array(
@@ -125,10 +127,20 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 
 		Functions\when( 'is_admin' )->justReturn( true );
 		Functions\when( 'current_user_can' )->justReturn( true );
+		Functions\when( 'wp_unslash' )->returnArg( 1 );
+		Functions\when( 'wp_safe_redirect' )->alias(
+			function ( $url ) {
+				throw new RedirectException( $url );
+			}
+		);
 
-		VendorHub_Connect::maybe_handle_redirect_return();
+		try {
+			VendorHub_Connect::maybe_handle_redirect_return();
+			$this->fail( 'Expected redirect to connect_error when state is missing.' );
+		} catch ( RedirectException $e ) {
+			$this->assertStringContainsString( 'vendorhub_status=connect_error', $e->url );
+		}
 
-		$this->assertTrue( true, 'Handler returned without saving when state is missing.' );
 		$_GET = array();
 	}
 
@@ -147,10 +159,18 @@ class VendorHub_Connect_Test extends PHPUnit\Framework\TestCase {
 		Functions\when( 'current_user_can' )->justReturn( true );
 		Functions\when( 'sanitize_text_field' )->returnArg( 1 );
 		Functions\when( 'wp_unslash' )->returnArg( 1 );
-		Functions\when( 'get_transient' )->justReturn(
-			array(
-				'state' => 'expected-state',
-			)
+		Functions\when( 'delete_option' )->justReturn( true );
+		Functions\when( 'delete_transient' )->justReturn( true );
+		Functions\when( 'get_option' )->alias(
+			function ( $key ) {
+				if ( 'vendorhub_connect_state_1' === $key ) {
+					return array(
+						'state'      => 'expected-state',
+						'expires_at' => time() + 900,
+					);
+				}
+				return '';
+			}
 		);
 		Functions\when( 'wp_safe_redirect' )->alias(
 			function ( $url ) {

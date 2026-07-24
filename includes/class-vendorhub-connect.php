@@ -290,17 +290,18 @@ class VendorHub_Connect {
 	 */
 	public static function get_oauth_authorize_url() {
 		$api_base      = VendorHub_Settings::get_api_base();
-		$state         = self::create_connect_state();
+		$state         = wp_create_nonce( 'vendorhub_connect_state_' . get_current_user_id() );
 		$code_verifier = self::create_pkce_verifier();
 		$challenge     = self::pkce_challenge( $code_verifier );
 
-		set_transient(
-			self::connect_state_transient_key(),
+		update_option(
+			self::connect_state_option_key(),
 			array(
 				'state'         => $state,
 				'code_verifier' => $code_verifier,
+				'expires_at'    => time() + ( 15 * MINUTE_IN_SECONDS ),
 			),
-			15 * MINUTE_IN_SECONDS
+			false
 		);
 
 		return add_query_arg(
@@ -357,15 +358,21 @@ class VendorHub_Connect {
 	/**
 	 * Create and persist CSRF state for connect redirect.
 	 *
+	 * Uses a user-scoped option (not a transient) so object-cache eviction on
+	 * hosts like WordPress.com cannot drop the state before return.
+	 *
 	 * @return string
 	 */
 	public static function create_connect_state() {
 		$state = wp_create_nonce( 'vendorhub_connect_state_' . get_current_user_id() );
 
-		set_transient(
-			self::connect_state_transient_key(),
-			array( 'state' => $state ),
-			15 * MINUTE_IN_SECONDS
+		update_option(
+			self::connect_state_option_key(),
+			array(
+				'state'      => $state,
+				'expires_at' => time() + ( 15 * MINUTE_IN_SECONDS ),
+			),
+			false
 		);
 
 		return $state;
@@ -386,7 +393,7 @@ class VendorHub_Connect {
 			return false;
 		}
 
-		$stored = get_transient( self::connect_state_transient_key() );
+		$stored = self::get_stored_connect_state();
 
 		if ( ! is_array( $stored ) || empty( $stored['state'] ) ) {
 			return false;
@@ -396,7 +403,7 @@ class VendorHub_Connect {
 			return false;
 		}
 
-		delete_transient( self::connect_state_transient_key() );
+		self::clear_stored_connect_state();
 
 		return true;
 	}
@@ -416,7 +423,7 @@ class VendorHub_Connect {
 			return false;
 		}
 
-		$stored = get_transient( self::connect_state_transient_key() );
+		$stored = self::get_stored_connect_state();
 
 		if ( ! is_array( $stored ) || empty( $stored['state'] ) ) {
 			return false;
@@ -426,7 +433,7 @@ class VendorHub_Connect {
 			return false;
 		}
 
-		delete_transient( self::connect_state_transient_key() );
+		self::clear_stored_connect_state();
 
 		return $stored;
 	}
@@ -517,7 +524,55 @@ class VendorHub_Connect {
 
 
 	/**
-	 * Transient key for connect state tied to current user.
+	 * Load stored connect state if present and not expired.
+	 *
+	 * @return array<string,mixed>|false
+	 */
+	private static function get_stored_connect_state() {
+		$stored = get_option( self::connect_state_option_key(), false );
+
+		// Legacy transient fallback for in-flight connects from older builds.
+		if ( ! is_array( $stored ) ) {
+			$stored = get_transient( self::connect_state_transient_key() );
+		}
+
+		if ( ! is_array( $stored ) || empty( $stored['state'] ) ) {
+			return false;
+		}
+
+		if ( ! empty( $stored['expires_at'] ) && (int) $stored['expires_at'] < time() ) {
+			self::clear_stored_connect_state();
+			return false;
+		}
+
+		return $stored;
+	}
+
+
+
+	/**
+	 * Clear connect state option and legacy transient.
+	 */
+	private static function clear_stored_connect_state() {
+		delete_option( self::connect_state_option_key() );
+		delete_transient( self::connect_state_transient_key() );
+	}
+
+
+
+	/**
+	 * Option key for durable connect state tied to current user.
+	 *
+	 * @return string
+	 */
+	private static function connect_state_option_key() {
+		return 'vendorhub_connect_state_' . get_current_user_id();
+	}
+
+
+
+	/**
+	 * Legacy transient key for connect state tied to current user.
 	 *
 	 * @return string
 	 */
@@ -566,15 +621,30 @@ class VendorHub_Connect {
 
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Connect return uses CSRF state transient validated below.
-		if ( ! isset( $_GET['page'], $_GET['vendorhub_store_id'], $_GET['vendorhub_api_token'], $_GET['state'] ) ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Connect return uses CSRF state validated below.
+		if ( ! isset( $_GET['page'] ) || 'wc-settings' !== $_GET['page'] ) {
 
 			return;
 
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( 'wc-settings' !== $_GET['page'] ) {
+		$has_creds = isset( $_GET['vendorhub_store_id'], $_GET['vendorhub_api_token'] );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$has_state = isset( $_GET['state'] ) && '' !== (string) wp_unslash( $_GET['state'] );
+
+		if ( $has_creds && ! $has_state ) {
+
+			self::log( 'Connect return rejected: missing state (CSRF).' );
+
+			wp_safe_redirect( self::settings_url( 'connect_error' ) );
+
+			exit;
+
+		}
+
+		if ( ! $has_creds || ! $has_state ) {
 
 			return;
 
@@ -630,6 +700,8 @@ class VendorHub_Connect {
 		delete_option( 'vendorhub_api_token' );
 
 		delete_option( 'vendorhub_plugin_token' );
+
+		self::clear_stored_connect_state();
 
 		self::log( 'Disconnected from VendorHub' );
 
