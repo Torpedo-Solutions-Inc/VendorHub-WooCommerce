@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       MyVendorHub for WooCommerce
  * Plugin URI:        https://github.com/Torpedo-Solutions-Inc/VendorHub-WooCommerce
- * Description:       Connect your WooCommerce store to MyVendorHub for vendor order routing and fulfillment updates.
+ * Description:       Automate supplier notifications, Accept/Reject tracking, and multi-vendor fulfillment for your WooCommerce store.
  * Version:           1.1.2
  * Requires at least: 5.8
  * Tested up to:      7.0
